@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}{{ super() }} - {{ 'Edit' if miner.id else 'Create' }} miner{% endblock %}
+
+{% block content %}
+<form method="post" action="{{ uri_for('miner-edit', mid=miner.key.id()) }}">
+    <div class="form-group">
+      <label for="id">ID:</label>
+      <input type="text" readonly id="id" name="id" value="{{ miner.key.id() }}">
+
+    </div>
+
+    <div class="form-group">
+      <label for="name">Name:</label>
+      <input required="required" type="text" id="name" name="name"
+             value="{{ miner.name or '' }}" placeholder="Miner name">
+    </div>
+
+    <div class="form-group">
+      <label for="schedule">Schedule:</label>
+        <select id="schedule" name="schedule">
+            <option value="">Manual</option>
+            {% for (k, v) in schedules.iteritems() %}
+                <option value="{{ k }}"
+                        {% if k == miner.update_interval %}
+                        selected="selected"
+                        {% endif %}
+                        >{{ v }}</option>
+            {% endfor %}
+
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+
+    <input type="submit" name="delete" value="Delete" class="btn btn-danger">
+
+</form>
+{% endblock %}

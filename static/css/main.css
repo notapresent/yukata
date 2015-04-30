@@ -1,0 +1,85 @@
+body, html {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    margin: 0; padding: 0;
+}
+
+#container {
+    margin: 0; padding: 0;
+}
+
+#navbar {
+    margin: 0 0 .5em 0; padding: .5em;
+    width: 100%
+    border-bottom: 1px solid silver;
+    background-color: aliceblue;
+}
+
+#navbar h1 {
+    margin: 0; padding: 0;
+}
+
+#usermenu {
+    float: right;
+}
+
+a.googlelogin {
+    display: block;
+    margin: -0.75em ;
+    width: 294px; height: 60px;
+    background-image: url("/static/images/Red-signin_Long_base_20dp.png");
+}
+
+a.googlelogin:hover {
+    background-image: url("/static/images/Red-signin_Long_hover_20dp.png");
+}
+
+#content {
+    margin: .5em;
+}
+
+.btn {
+    display: inline-block;
+    background-color: #eee;
+    border: 1px solid #aaa;
+    padding: .2em .4em;
+
+}
+
+a.btn {
+    color: black;
+    text-decoration: none;
+}
+
+table, td, th
+{
+    border-color: #aaa;
+    border-style: solid;
+}
+
+table
+{
+    border-width: 0 0 1px 1px;
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+td, th
+{
+    margin: 0;
+    padding: 4px;
+    border-width: 1px 1px 0 0;
+}
+
+th {
+    background-color: azure;
+}
+
+.form-group label, .form-group input, .form-group select {
+    display: inline-block;
+    min-width: 150px;
+    margin: .3em 0;
+}
+
+.form-group input, .form-group select {
+    min-width: 300px;
+}

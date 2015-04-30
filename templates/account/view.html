@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}{{ super() }} - View account{% endblock %}
+
+{% block content %}
+<table>
+<tr>
+    <td>ID:</td><td>{{ account.key.id() }}</td>
+</tr>
+<tr>
+    <td>Email:</td><td>{{ user.email() }}</td>
+</tr>
+<tr>
+    <td>Username:</td><td>{{ user.nickname() }}</td>
+</tr>
+<tr>
+    <td>Created:</td><td>{{ account.created|datetimeformat }}</td>
+</tr>
+<tr>
+    <td>API key:</td><td>{{ account.apikey }}</td>
+</tr>
+</table>
+{% endblock %}

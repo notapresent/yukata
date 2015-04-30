@@ -1,0 +1,19 @@
+<div id="navbar">
+
+    <div id="usermenu">
+        {% if account %}
+            <strong><a href="{{ uri_for('account-view') }}">{{ user.nickname() }}</a></strong>
+            {{ '(admin)' if is_admin else '' }}
+            | <a href="{{ logout_url }}">logout</a>
+        {% elif user %}
+            Signed in as {{ user.nickname() }} |
+            <a href="{{ uri_for('account-edit') }}">Create account</a>
+            | <a href="{{ logout_url }}">logout</a>
+        {% else %}
+            <a class="googlelogin" href="{{ login_url }}"></a>
+        {% endif %}
+    </div>
+
+    <h1><a href="{{ uri_for('home') }}">webminery</a></h1>
+
+</div>

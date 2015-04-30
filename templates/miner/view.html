@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}{{ super() }} - Miners - {{ miner.name }}{% endblock %}
+
+{% block content %}
+    <h3>Miner {{ miner.name }}</h3>
+
+<table>
+<tr>
+    <td>ID</td><td>{{ miner.key.id() }}</td>
+</tr>
+<tr>
+    <td>Schedule</td><td>{{ schedules[miner.schedule] }}</td>
+</tr>
+</table>
+
+{% endblock %}

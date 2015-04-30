@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}{{ super() }} - Welcome{% endblock %}
+
+{% block content %}
+
+    {% if account %}
+        <a href="{{ uri_for('miner-index') }}">Miner list</a>
+    {% elif user %}
+        <a href="{{ uri_for('account-edit') }}">Create account</a>
+    {% else %}
+        <h3>Sign in with Google to continue</h3>
+    {% endif %}
+
+{% endblock %}
