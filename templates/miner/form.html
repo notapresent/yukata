@@ -19,7 +19,6 @@
     <div class="form-group">
       <label for="schedule">Schedule:</label>
         <select id="schedule" name="schedule">
-            <option value="">Manual</option>
             {% for (k, v) in schedules.iteritems() %}
                 <option value="{{ k }}"
                         {% if k == miner.update_interval %}
@@ -27,7 +26,6 @@
                         {% endif %}
                         >{{ v }}</option>
             {% endfor %}
-
         </select>
     </div>
 
