@@ -58,3 +58,7 @@ target/
 
 # Pycharm artifacts
 .idea/
+
+# dev datastore
+db/
+
