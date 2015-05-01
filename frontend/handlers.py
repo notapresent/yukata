@@ -65,7 +65,7 @@ class MinerHandler(UserAwareHandler):
     @login_required
     def index(self):
         template_vars = {
-            'miners': Miner.query(ancestor=self.current_account.key).fetch(),
+            'miners': Miner.list(ancestor=self.current_account.key),
             'schedules': SCHEDULES
         }
         self.render_response('miner/index.html', **template_vars)
@@ -84,22 +84,30 @@ class MinerHandler(UserAwareHandler):
                              schedules=SCHEDULES)
 
     @login_required
-    def edit(self, mid):
-        if self.request.method == 'GET':
+    def form(self, mid):
+        if mid:
             miner = Miner.get_by_id(int(mid), parent=self.current_account.key)
-            self.render_response('miner/form.html', miner=miner,
-                                 schedules=SCHEDULES)
         else:
-            mid = self.request.get('id')
+            miner = Miner()
+        self.render_response('miner/form.html', miner=miner,
+                             schedules=SCHEDULES)
+    @login_required
+    def save(self):
+        mid = self.request.get('id')
+        if mid:
             miner = Miner.get_by_id(int(mid), parent=self.current_account.key)
+        else:
+            miner = Miner(parent=self.current_account.key)
 
-            if self.request.get('delete'):
-                miner.key.delete()
-                return self.redirect_to('miner-index')
+        miner.populate(
+            name=self.request.get('name'),
+            schedule=self.request.get('schedule'),
+        )
+        key = miner.put()
+        return self.redirect_to('miner-view', mid=key.id())
 
-            miner.populate(
-                name=self.request.get('name'),
-                schedule=self.request.get('schedule'),
-            )
-            miner.put()
-            return self.redirect_to('miner-view', mid=mid)
+    @login_required
+    def delete(self, mid):
+        miner = Miner.get_by_id(int(mid), parent=self.current_account.key)
+        miner.key.delete()
+        return self.redirect_to('miner-index')
