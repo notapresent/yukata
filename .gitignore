@@ -60,5 +60,4 @@ target/
 .idea/
 
 # dev datastore
-db/
-
+ndb/
