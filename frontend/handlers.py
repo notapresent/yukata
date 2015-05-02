@@ -77,13 +77,6 @@ class MinerHandler(UserAwareHandler):
                              schedules=SCHEDULES)
 
     @login_required
-    def create(self):
-        miner = Miner(parent=self.current_account.key)
-        miner.put()
-        self.render_response('miner/form.html', miner=miner,
-                             schedules=SCHEDULES)
-
-    @login_required
     def form(self, mid):
         if mid:
             miner = Miner.get_by_id(int(mid), parent=self.current_account.key)

@@ -10,7 +10,7 @@
 <form method="post" action="{{ uri_for('miner-save') }}">
     <div class="form-group">
       <label for="id">ID:</label>
-      <input type="text" readonly id="id" name="id" 
+      <input type="text" readonly id="id" name="id"
              value="{{ miner.key.id() if miner.key else '' }}">
 
     </div>
@@ -26,7 +26,7 @@
         <select id="schedule" name="schedule">
             {% for (k, v) in schedules.iteritems() %}
                 <option value="{{ k }}"
-                        {% if k == miner.update_interval %}
+                        {% if k == miner.schedule %}
                         selected="selected"
                         {% endif %}
                         >{{ v }}</option>
@@ -39,9 +39,9 @@
 </form>
 
 {% if miner.key %}
-    <form method="post" 
+    <form method="post"
           action="{{ uri_for('miner-delete', mid=miner.key.id()) }}">
         <button type="submit" class="btn btn-danger">Delete</button>
     </form>
-{% endif %}    
+{% endif %}
 {% endblock %}
