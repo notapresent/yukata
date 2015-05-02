@@ -2,8 +2,9 @@ from __future__ import absolute_import
 
 import logging
 
-from google.appengine.ext import ndb
 from google.appengine.api import urlfetch
+from google.appengine.api import taskqueue
+from google.appengine.ext import ndb
 
 from lxml import etree
 
@@ -13,11 +14,21 @@ from models import BaseModel
 class Miner(BaseModel):
     created_at = ndb.DateTimeProperty(auto_now_add=True, indexed=False)
     name = ndb.StringProperty(indexed=False, required=True)
-    schedule = ndb.StringProperty(indexed=False)
+    schedule = ndb.StringProperty()
 
     @classmethod
     def list(cls, ancestor=None):
         return cls.query(ancestor=ancestor).fetch()
-    
+
+    @classmethod
+    def enqueue_scheduled_miners(cls, schedule, task_url):
+        # TODO Add tasks in batches
+        miners = cls.query(cls.schedule == schedule).fetch()
+        for m in miners:
+            taskqueue.add(url=task_url + m.key.urlsafe())
+        msg = "Start {} miners with {} schedule".format(len(miners), schedule)
+        logging.info(msg)
+        return len(miners)
+
     def run(self):
         pass

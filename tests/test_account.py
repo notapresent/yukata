@@ -9,6 +9,7 @@ from models.account import Account
 
 
 class AccountTestCase(GAETestCase):
+
     def setUp(self):
         super(AccountTestCase, self).setUp()
         self.testbed.init_datastore_v3_stub()
@@ -16,4 +17,4 @@ class AccountTestCase(GAETestCase):
 
     def test_account_apikey_generation(self):
         acc_key = Account().put()
-        self.assertIsNot(acc_key.get().apikey, None)
+        self.assertIsNot(None, acc_key.get().apikey)

@@ -11,9 +11,9 @@ config = {}
 
 routes = [
     PathPrefixRoute('/task', [
-        webapp2.Route('/runminer/<miner_key:[\w\-]+>',
+        webapp2.Route('/runminer/<miner_key:[\w\-]*>',
                       'backend.handlers.TaskHandler:runminer',
-                      'task-runminer'),
+                      'task-runminer', defaults={'miner_key': ''}),
         webapp2.Route('/runjob/<job_key:[\w\-]+>',
                       'backend.handlers.TaskHandler:runjob', 'task-runjob'),
     ]),

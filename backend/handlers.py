@@ -23,11 +23,6 @@ class TaskHandler(webapp2.RequestHandler):
 
 class CronHandler(webapp2.RequestHandler):
     def runminers(self, schedule):
-        miners = Miner.query(Miner.schedule == schedule).fetch()
-        for m in miners:
-            url = self.uri_for('task-runminer', miner_key=m.key.urlsafe())
-            taskqueue.add(url=url)
-
-        msg = "Cron: {} miners with {} schedule".format(len(miners), schedule)
-        logging.info(msg)
-        self.response.write(msg)
+        task_url = self.uri_for('task-runminer')
+        num_tasks = Miner.enqueue_scheduled_miners(schedule, task_url)
+        self.response.write("Started {} for {}".format(num_tasks, schedule))

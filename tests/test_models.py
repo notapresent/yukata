@@ -7,7 +7,9 @@ from . import GAETestCase
 
 from models import BaseModel
 
+
 class BaseModelTestCase(GAETestCase):
+
     def setUp(self):
         super(BaseModelTestCase, self).setUp()
         self.testbed.init_datastore_v3_stub()
