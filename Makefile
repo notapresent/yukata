@@ -5,7 +5,7 @@ APP_ID          = (YOUR-APP-ID)
 EMAIL           = (YOUR-EMAIL)
 SERVE_PORT      = 8080
 SERVE_ADDRESS   = 0.0.0.0
-DATASTORE_PATH  = ./ndb
+DATASTORE_PATH  = ./datastore.sqlite3
 
 help:
 	@echo "AppEngine make file. Options are:"
