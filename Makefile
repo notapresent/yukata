@@ -1,6 +1,5 @@
-PYTHON          = python
-APPENGINE       = /home/action//google_appengine
-APPCFG          = $(PYTHON) $(APPENGINE)/appcfg.py
+
+APPCFG          = appcfg.py
 APP_ID          = (YOUR-APP-ID)
 EMAIL           = (YOUR-EMAIL)
 SERVE_PORT      = 8080
@@ -50,7 +49,7 @@ rollback:
 	$(APPCFG) -e $(EMAIL) rollback .
 
 serve:
-	@$(PYTHON) $(APPENGINE)/dev_appserver.py \
+	@dev_appserver.py \
 	--host $(SERVE_ADDRESS) \
 	--admin_host $(SERVE_ADDRESS) \
 	--port $(SERVE_PORT) \
@@ -58,7 +57,7 @@ serve:
 	.
 
 console:
-	@$(PYTHON) $(APPENGINE)/remote_api_shell.py -s $(APP_ID).appspot.com
+	@remote_api_shell.py -s $(APP_ID).appspot.com
 
 update-indexes:
 	$(APPCFG) update_indexes .
