@@ -35,16 +35,18 @@ routes = [
     ]),
     PathPrefixRoute('/miner', [
         RedirectRoute('/', 'frontend.handlers.MinerHandler:index',
-                      'miner-index'),
+                      'miner-index', methods=['GET']),
         RedirectRoute('/<mid:\d+>', 'frontend.handlers.MinerHandler:view',
-                      'miner-view'),
-        RedirectRoute('/edit/<mid:\d*>', 'frontend.handlers.MinerHandler:form',
-                      'miner-form', methods=['GET'], defaults={'mid': ''}),
-        RedirectRoute('/edit/', 'frontend.handlers.MinerHandler:save',
+                      'miner-view', methods=['GET']),
+        RedirectRoute('/<mid:\d+>/edit', 'frontend.handlers.MinerHandler:edit',
+                      'miner-edit', methods=['GET']),
+        RedirectRoute('/save', 'frontend.handlers.MinerHandler:save',
                       'miner-save', methods=['POST']),
-        RedirectRoute('/delete/<mid:\d+>', 
+        RedirectRoute('/create', 'frontend.handlers.MinerHandler:create',
+                      'miner-create', methods=['GET']),
+        RedirectRoute('/<mid:\d+>/delete',
                       'frontend.handlers.MinerHandler:delete',
-                      'miner-delete'),
+                      'miner-delete')
     ]),
 ]
 

@@ -6,8 +6,8 @@ import urllib
 from pprint import pformat
 
 from google.appengine.api import users
-
-from .basehandlers import UserAwareHandler, login_required, admin_required
+from webapp2_extras.appengine.users import login_required, admin_required
+from .basehandlers import UserAwareHandler
 
 from models import SCHEDULES
 from models.account import Account
@@ -77,15 +77,22 @@ class MinerHandler(UserAwareHandler):
                              schedules=SCHEDULES)
 
     @login_required
-    def form(self, mid):
-        if mid:
-            miner = Miner.get_by_id(int(mid), parent=self.current_account.key)
-        else:
-            miner = Miner()
+    def edit(self, mid):
+        miner = Miner.get_by_id(int(mid), parent=self.current_account.key)
         self.render_response('miner/form.html', miner=miner,
                              schedules=SCHEDULES)
+
     @login_required
+    def create(self):
+        # Show form
+        if self.request.method == 'GET':
+            miner = Miner(parent=self.current_account.key)
+            self.render_response('miner/form.html', miner=miner,
+                                 schedules=SCHEDULES)
+
     def save(self):
+        self.check_login()
+
         mid = self.request.get('id')
         if mid:
             miner = Miner.get_by_id(int(mid), parent=self.current_account.key)
@@ -99,8 +106,8 @@ class MinerHandler(UserAwareHandler):
         key = miner.put()
         return self.redirect_to('miner-view', mid=key.id())
 
-    @login_required
     def delete(self, mid):
+        self.check_login()
         miner = Miner.get_by_id(int(mid), parent=self.current_account.key)
         miner.key.delete()
         return self.redirect_to('miner-index')

@@ -5,7 +5,7 @@
 {% block content %}
     <h3>Miners</h3>
 
-    <a href="{{ uri_for('miner-form') }}" class="btn">Add miner</a>
+    <a href="{{ uri_for('miner-create') }}" class="btn">Add miner</a>
 
     <table>
         <tr>
@@ -20,7 +20,7 @@
             <td>{{ schedules[miner.schedule] }}</td>
             <td>-</td>
             <td>
-                <a href="{{ uri_for('miner-form', mid=miner.key.id()) }}">[E]</a>
+                <a href="{{ uri_for('miner-edit', mid=miner.key.id()) }}">[E]</a>
                 <a onclick="javascript:return confirm('Sure?');"
                    href="{{ uri_for('miner-delete', mid=miner.key.id()) }}">[X]</a>
             </td>

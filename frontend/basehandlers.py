@@ -5,7 +5,7 @@ from google.appengine.api import users
 
 import webapp2
 from webapp2_extras import jinja2
-
+from webapp2_extras.appengine.users import login_required, admin_required
 from models.account import Account
 
 
@@ -13,7 +13,6 @@ class BaseHandler(webapp2.RequestHandler):
     """
         BaseHandler for all requests all other handlers will
         extend this handler
-
     """
     def __init__(self, request, response):
         self.initialize(request, response)
@@ -36,40 +35,18 @@ class BaseHandler(webapp2.RequestHandler):
             template_string).render(**ctx))
 
 
-def login_required(handler):
-    """Requires that a user be logged in to access the resource"""
-    def check_login(self, *args, **kwargs):
-        if self.current_account:
-            return handler(self, *args, **kwargs)
-        elif self.current_user:     # We've got user but no account
-            next = urllib.quote_plus(self.request.uri)
-            return self.redirect_to('account-edit', next=next)
-        else:
-            return self.redirect(users.create_login_url(self.request.uri))
-
-    return check_login
-
-
-def admin_required(handler):
-    """Requires that a current user is app administrator"""
-    def check_admin(self, *args, **kwargs):
-        if self.current_user and users.is_current_user_admin():
-            return handler(self, *args, **kwargs)
-        else:
-            self.abort(403)
-
-    return check_admin
-
-
 class UserAwareHandler(BaseHandler):
     def __init__(self, request, response):
         super(UserAwareHandler, self).__init__(request, response)
+        self.login_url = users.create_login_url(self.request.uri)
+        self.logout_url = users.create_logout_url(webapp2.uri_for('home'))
+        self.is_admin = users.is_current_user_admin()
         self.jinja2_context.update({
             'user': self.current_user,
             'account': self.current_account,
-            'is_admin': users.is_current_user_admin(),
-            'login_url': users.create_login_url(self.request.uri),
-            'logout_url': users.create_logout_url(webapp2.uri_for('home'))
+            'is_admin': self.is_admin,
+            'login_url': self.login_url,
+            'logout_url': self.logout_url
         })
 
     @webapp2.cached_property
@@ -82,3 +59,14 @@ class UserAwareHandler(BaseHandler):
             return Account.get_by_id(self.current_user.user_id())
         else:
             return None
+
+    def check_login(self):
+        if not self.current_user:
+            return self.redirect(self.login_url, abort=True)
+
+    def check_admin(self):
+        if not self.current_user:
+            return self.redirect(self.login_url, abort=True)
+
+        if not self.is_admin:
+            self.abort(403, detail='You need admin privileges to access this')
