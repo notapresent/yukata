@@ -4,6 +4,7 @@ from google.appengine.ext import testbed
 
 from . import GAETestCase
 
+from models import SCHEDULES
 from models.account import Account
 from models.miner import Miner
 
@@ -26,13 +27,13 @@ class MinerTestCase(GAETestCase):
         self.assertEqual(Miner.list(ancestor=acckey), [])
 
     def test_list_returns_one(self):
-        acckey = Account(apikey='dummy').put()
-        miner = Miner(parent=acckey, name='dummy')
+        acckey = Account().put()
+        miner = Miner(parent=acckey, name='_', schedule=SCHEDULES.keys()[0])
         miner.put()
         self.assertEqual(Miner.list(ancestor=acckey), [miner])
 
     def test_enqueue_scheduled_miners_enqueues(self):
-        schedule = '1d'
+        schedule = SCHEDULES.keys()[0]
         miner = Miner(name='testminer', schedule=schedule)
         miner_key = miner.put()
         baseurl = '/'
