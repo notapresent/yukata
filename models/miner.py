@@ -6,15 +6,21 @@ from google.appengine.api import urlfetch
 from google.appengine.api import taskqueue
 from google.appengine.ext import ndb
 
-from lxml import etree
-
-from models import BaseModel
+from models import BaseModel, SCHEDULES
+from models.dataset import DataSet
+from models.urlsource import BaseURLSource
+from models.downloader import Downloader
 
 
 class Miner(BaseModel):
     created_at = ndb.DateTimeProperty(auto_now_add=True, indexed=False)
     name = ndb.StringProperty(indexed=False, required=True)
-    schedule = ndb.StringProperty()
+    schedule = ndb.StringProperty(choices=SCHEDULES.keys(), required=True)
+
+    # Submodels
+    urlsource = ndb.LocalStructuredProperty(BaseURLSource)
+    downloader = ndb.LocalStructuredProperty(Downloader)
+    datasets = ndb.LocalStructuredProperty(DataSet, repeated=True)
 
     @classmethod
     def list(cls, ancestor=None):
