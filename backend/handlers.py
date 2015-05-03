@@ -11,7 +11,7 @@ from models.miner import Miner
 
 class TaskHandler(webapp2.RequestHandler):
     def runminer(self, miner_key):
-        miner = Miner.from_urlsafe(miner_key)
+        miner = Miner.get_by_urlsafe(miner_key)
         message = "Running miner {}".format(miner.name)
         logging.info(message)
         self.response.write(message)

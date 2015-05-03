@@ -18,8 +18,8 @@ class BaseModelTestCase(GAETestCase):
     def tearDown(self):
         self.testbed.deactivate()
 
-    def test_from_urlsafe_finds_entity(self):
+    def test_get_by_urlsafe_finds_entity(self):
         model = BaseModel()
         model_key = model.put()
         urlsafe = model_key.urlsafe()
-        self.assertIs(model, BaseModel.from_urlsafe(urlsafe))
+        self.assertIs(model, BaseModel.get_by_urlsafe(urlsafe))

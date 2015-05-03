@@ -12,6 +12,5 @@ SCHEDULES = {
 
 class BaseModel(ndb.Model):
     @classmethod
-    def from_urlsafe(cls, urlsafe_key, **ctx_options):
-        key = ndb.Key(urlsafe=urlsafe_key)
-        return key.get(**ctx_options)
+    def get_by_urlsafe(cls, urlsafe_key, **ctx_options):
+        return ndb.Key(urlsafe=urlsafe_key).get(**ctx_options)
