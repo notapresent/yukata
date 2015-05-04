@@ -25,7 +25,14 @@ config = {
 routes = [
     # Frontend routes
     RedirectRoute('/', 'frontend.handlers.MainHandler:home', 'home'),
-    RedirectRoute('/env', 'frontend.handlers.MainHandler:env', 'env'),
+
+    PathPrefixRoute('/admin', [
+        RedirectRoute('/', 'frontend.handlers.AdminHandler:index',
+                      'admin-index'),
+
+        RedirectRoute('/env', 'frontend.handlers.AdminHandler:env',
+                      'admin-env'),
+    ]),
 
     PathPrefixRoute('/account', [
         RedirectRoute('/', 'frontend.handlers.AccountHandler:view',

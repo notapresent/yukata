@@ -18,7 +18,15 @@ class MainHandler(UserAwareHandler):
     def home(self):
         self.render_response('welcome.html')
 
-    @admin_required
+
+class AdminHandler(UserAwareHandler):
+    def dispatch(self):
+        self.check_admin()
+        super(AdminHandler, self).dispatch()
+
+    def index(self):
+        self.render_response('admin/index.html')
+        
     def env(self):
         ctx = {
             'os.environ': pformat(os.environ.copy()),

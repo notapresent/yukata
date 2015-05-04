@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}{{ super() }} - Admin{% endblock %}
+
+{% block content %}
+<h3>Adminery</h3>
+
+<a href="{{ uri_for('admin-env') }}">Environment</a>
+
+{% endblock %}
