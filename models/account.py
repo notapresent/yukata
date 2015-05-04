@@ -17,6 +17,7 @@ def make_apikey():
 class Account(BaseModel):
     created = ndb.DateTimeProperty(auto_now_add=True)
     apikey = ndb.StringProperty(required=True)
+    display_name = ndb.StringProperty(required=True)
 
     def _pre_put_hook(self):
         if self.apikey is None:

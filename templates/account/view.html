@@ -5,19 +5,21 @@
 {% block content %}
 <table>
 <tr>
-    <td>ID:</td><td>{{ account.key.id() }}</td>
+    <td>User ID:</td><td>{{ account.key.id() }}</td>
 </tr>
 <tr>
     <td>Email:</td><td>{{ user.email() }}</td>
 </tr>
 <tr>
-    <td>Username:</td><td>{{ user.nickname() }}</td>
+    <td>Display name:</td><td>{{ account.display_name }}</td>
 </tr>
 <tr>
-    <td>Created:</td><td>{{ account.created|datetimeformat }}</td>
+    <td>Account created:</td><td>{{ account.created|datetimeformat }}</td>
 </tr>
 <tr>
     <td>API key:</td><td>{{ account.apikey }}</td>
 </tr>
 </table>
+
+<a class="btn" href="{{ uri_for('account-edit') }}">Edit</a>
 {% endblock %}

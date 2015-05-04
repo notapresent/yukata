@@ -12,7 +12,7 @@ from .basehandlers import UserAwareHandler
 from models import SCHEDULES
 from models.account import Account
 from models.miner import Miner
-
+import forms
 
 class MainHandler(UserAwareHandler):
     def home(self):
@@ -26,7 +26,7 @@ class AdminHandler(UserAwareHandler):
 
     def index(self):
         self.render_response('admin/index.html')
-        
+
     def env(self):
         ctx = {
             'os.environ': pformat(os.environ.copy()),
@@ -42,31 +42,57 @@ class AccountHandler(UserAwareHandler):
     def view(self):
         acc = self.current_account
         self.render_response('account/view.html', account=acc)
-        # acc = Account(id=self.current_user.user_id())
 
+    @login_required
     def edit(self):
         if not self.current_user:
             return self.redirect(users.create_login_url(self.request.uri))
 
-        if self.request.method == 'GET':
-            acc = self.current_account
-            next = urllib.unquote_plus(self.request.get('next'))
-            self.render_response('account/form.html', account=acc, next=next)
+        form = forms.AccountForm(obj=self.current_account)
+        context = {
+            'form': form,
+            'create': False
+        }
+        self.render_response('account/form.html', **context)
 
-        elif self.request.method == 'POST':
-            acc_id = self.request.get('id')
-            if acc_id:
-                acc = Account.get_by_id(acc_id)
-            else:
-                acc = Account(id=self.current_user.user_id())
-            # acc.populate()
+    def save(self):
+        if not self.current_user:
+            return self.redirect(users.create_login_url(self.request.uri))
+        
+        form = forms.AccountForm(self.request.POST)
+        if form.validate():
+            acc = Account.get_by_id(self.current_user.user_id())
+            acc.populate(display_name=form.display_name.data)
             acc.put()
+            self.redirect_to('account-view')
 
-            next = self.request.get('next')
-            if next:
-                return self.redirect(str(next))
-            else:
-                return self.redirect_to('account-view')
+        self.render_response('account/form.html', form=form, create=False)
+
+    def register(self):
+        if not self.current_user:
+            return self.redirect(users.create_login_url(self.request.uri))
+
+        account = Account(display_name=self.current_user.nickname())
+        context = {
+            'form': forms.AccountRegisterForm(obj=account),
+            'next': urllib.unquote_plus(self.request.get('next')),
+            'create': True
+        }
+        self.render_response('account/form.html', **context)
+
+    def create(self):
+        form = forms.AccountRegisterForm(self.request.POST)
+        next_url = self.request.get('next') or self.uri_for('home')
+        if form.validate():
+            acc = Account(id=self.current_user.user_id())
+            acc.populate(display_name=form.display_name.data)
+            acc.put()
+            return self.redirect(next_url, abort=True)
+        else:
+            raise ValueError(form.errors)
+
+        context = {'form': form, 'create': True, 'next': next_url }
+        self.render_response('account/form.html', **context)
 
 
 class MinerHandler(UserAwareHandler):

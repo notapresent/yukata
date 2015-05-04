@@ -38,8 +38,15 @@ routes = [
         RedirectRoute('/', 'frontend.handlers.AccountHandler:view',
                       'account-view'),
         RedirectRoute('/edit', 'frontend.handlers.AccountHandler:edit',
-                      'account-edit')
+                      'account-edit', methods=['GET']),
+        RedirectRoute('/edit', 'frontend.handlers.AccountHandler:save',
+                      'account-edit', methods=['POST']),
+        RedirectRoute('/create', 'frontend.handlers.AccountHandler:register',
+                      'account-create', methods=['GET']),
+        RedirectRoute('/create', 'frontend.handlers.AccountHandler:create',
+                      'account-create', methods=['POST'])
     ]),
+
     PathPrefixRoute('/miner', [
         RedirectRoute('/', 'frontend.handlers.MinerHandler:index',
                       'miner-index', methods=['GET']),

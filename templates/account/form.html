@@ -3,31 +3,34 @@
 {% block title %}{{ super() }} - {{ 'Edit' if account else 'Create' }} account{% endblock %}
 
 {% block content %}
-    <h2>{{ 'Edit' if account else 'Create' }} account</h2>
-<form method="post" action="{{ uri_for('account-edit') }}">
-    <input type="hidden" name="id" value="{{ account.key.id() if account else ''}}">
-    <input type="hidden" name="next" value="{{ next }}">
+    <h2>{{ 'Create' if create else 'Edit' }} profile</h2>
 
-    <table>
-        <tr>
-            <td>ID:</td>
-            <td><input type="text" readonly value="{{ user.user_id() }}"></td>
-        </tr>
+    <form method="post"
+          action="{{ uri_for('account-create') if create else uri_for('account-edit') }}">
+        <input type="hidden" name="next" value="{{ next }}">
+        <div>Email: {{ user.email() }}</div>
 
-        <tr>
-            <td>Email:</td>
-            <td><input type="text" readonly value="{{ user.email() }}"></td>
-        </tr>
+        <div>{{ form.display_name.label }}:
+            {{ form.display_name(required=True) }}
+            {% if form.display_name.errors %}
+                <ul class="errors">
+                    {% for error in form.display_name.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
 
-        <tr>
-            <td>Username:</td>
-            <td><input type="text" readonly value="{{ user.nickname() }}"></td>
-        </tr>
+        {% if create %}
+            <div>
+                {{ form.accept_tos.label }}:
+                {{ form.accept_tos(required=True) }}
+            </div>
+        {% endif %}
 
-    </table>
-    <button type="submit">
-    {{ 'Save' if account else 'Create' }}
-    </button>
-</form>
+        <button type="submit">
+        {{ 'Create account' if create else 'Save' }}
+        </button>
 
+    </form>
 {% endblock %}
