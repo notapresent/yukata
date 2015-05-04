@@ -16,7 +16,9 @@ class BaseHandler(webapp2.RequestHandler):
     """
     def __init__(self, request, response):
         self.initialize(request, response)
-        self.jinja2_context = {}
+        self.jinja2_context = {
+            'request': self.request
+        }
 
     @webapp2.cached_property
     def jinja2(self):
