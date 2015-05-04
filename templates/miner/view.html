@@ -16,4 +16,12 @@
 </tr>
 </table>
 
+<a class="btn" href="{{ uri_for('miner-edit', mid=miner.key.id()) }}">Edit</a>
+
+<form method="post"
+      action="{{ uri_for('miner-delete', mid=miner.key.id()) }}">
+    <button onclick="javascript:return confirm('Sure?')"
+            type="submit" class="btn btn-danger">Delete</button>
+</form>
+
 {% endblock %}
