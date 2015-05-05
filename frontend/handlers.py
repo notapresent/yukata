@@ -104,38 +104,33 @@ class MinerHandler(UserAwareHandler):
         self.render_response('miner/view.html', miner=miner, mid=mid,
                              schedules=SCHEDULES)
 
-    @login_required
-    def edit(self, mid):
-        miner = Miner.get_by_id(int(mid), parent=self.current_account.key)
-        self.render_response('miner/form.html', miner=miner,
-                             schedules=SCHEDULES)
-
-    @login_required
-    def create(self):
-        # Show form
-        if self.request.method == 'GET':
-            miner = Miner(parent=self.current_account.key)
-            self.render_response('miner/form.html', miner=miner,
-                                 schedules=SCHEDULES)
-
-    def save(self):
-        self.check_login()
-
-        mid = self.request.get('id')
-        if mid:
-            miner = Miner.get_by_id(int(mid), parent=self.current_account.key)
-        else:
-            miner = Miner(parent=self.current_account.key)
-
-        miner.populate(
-            name=self.request.get('name'),
-            schedule=self.request.get('schedule'),
-        )
-        key = miner.put()
-        return self.redirect_to('miner-view', mid=key.id())
-
     def delete(self, mid):
         self.check_login()
         miner = Miner.get_by_id(int(mid), parent=self.current_account.key)
         miner.key.delete()
         return self.redirect_to('miner-index')
+
+    @login_required
+    def show_form(self, mid=None):
+        if mid is None:
+            miner = Miner(name='')
+        else:
+            miner = Miner.get_by_id(int(mid), parent=self.current_account.key)
+
+        form = forms.MinerForm(self.request.POST, miner)
+        self.render_response('miner/form2.html', form=form, mid=mid)
+
+    def process_form(self, mid=None):
+        if mid is None:
+            miner = Miner(name='', parent=self.current_account.key)
+        else:
+            miner = Miner.get_by_id(int(mid), parent=self.current_account.key)
+
+        form = forms.MinerForm(self.request.POST, miner)
+
+        if form.validate():
+            form.populate_obj(miner)
+            key = miner.put()
+            return self.redirect_to('miner-view', mid=key.id())
+
+        self.render_response('miner/form2.html', form=form, mid=mid)

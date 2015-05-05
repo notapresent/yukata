@@ -14,8 +14,9 @@ from models.downloader import Downloader
 
 class Miner(BaseModel):
     created_at = ndb.DateTimeProperty(auto_now_add=True, indexed=False)
-    name = ndb.StringProperty(indexed=False, required=True)
-    schedule = ndb.StringProperty(choices=SCHEDULES.keys(), required=True)
+    name = ndb.StringProperty(required=True, default='Anonymous miner')
+    schedule = ndb.StringProperty(choices=SCHEDULES.keys(), required=True,
+                                  default='m')
 
     # Submodels
     urlsource = ndb.LocalStructuredProperty(BaseURLSource)
@@ -45,3 +46,4 @@ class Miner(BaseModel):
         dictified = self.to_dict(exclude=['created_at', 'name', 'schedule'])
         dictified['id'] = self.key.id()
         return dictified
+

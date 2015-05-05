@@ -1,8 +1,10 @@
-from wtforms import Form, BooleanField, StringField, validators
+from wtforms import (Form, BooleanField, StringField, HiddenField, validators,
+                     IntegerField, SelectField)
+from wtforms.widgets import HiddenInput
 from wtforms_appengine.ndb import model_form
 
 from models.account import Account
-
+from models import SCHEDULES
 
 class AccountForm(model_form(Account, exclude=['apikey'])):
     def __init__(self, *args, **kwargs):
@@ -14,4 +16,18 @@ class AccountForm(model_form(Account, exclude=['apikey'])):
 class AccountRegisterForm(AccountForm):
     accept_tos = BooleanField('I accept terms and conditions',
                               [validators.DataRequired()])
+
+
+class BaseURLSourceForm(Form):
+    pass
+
+
+class SingleURLSourceForm(BaseURLSourceForm):
+    url = StringField('URL', [validators.URL()])
+
+
+class MinerForm(Form):
+    # mid = IntegerField(widget=HiddenInput())
+    name = StringField('Miner name')
+    schedule = SelectField('Schedule', default='m', choices=SCHEDULES.items())
 
