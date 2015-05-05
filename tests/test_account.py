@@ -16,5 +16,5 @@ class AccountTestCase(GAETestCase):
         self.testbed.init_memcache_stub()
 
     def test_account_apikey_generation(self):
-        acc_key = Account().put()
+        acc_key = Account(display_name='_').put()
         self.assertIsNot(None, acc_key.get().apikey)
