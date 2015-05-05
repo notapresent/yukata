@@ -10,4 +10,3 @@ from models import urlsource
 
 class URLSourceTestCase(unittest.TestCase):
     pass
-

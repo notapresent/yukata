@@ -14,12 +14,11 @@ class TaskHandler(webapp2.RequestHandler):
     def run_miner(self):
         """
         Reconstructs miner from POST data and runs it
-        
         """
         miner = Miner()
         miner.populate(self.request.POST)
         miner.start()
-    
+
     def run_job(self):
         """
         Reconstructs mining job from POST data and runs it

@@ -7,6 +7,7 @@ from models.account import Account
 class AccountForm(model_form(Account, exclude=['apikey'])):
     pass
 
+
 class AccountRegisterForm(AccountForm):
     accept_tos = BooleanField('I accept terms and conditions',
                               [validators.Required()])

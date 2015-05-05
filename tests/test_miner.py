@@ -9,14 +9,12 @@ from models.miner import Miner
 
 
 class MinerTestCase(GAETestCase):
-
     def setUp(self):
         super(MinerTestCase, self).setUp()
         self.testbed.init_datastore_v3_stub()
         self.testbed.init_memcache_stub()
         self.testbed.init_taskqueue_stub()
         self.taskqueue = self.testbed.get_stub(testbed.TASKQUEUE_SERVICE_NAME)
-
 
     def tearDown(self):
         self.testbed.deactivate()

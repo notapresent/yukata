@@ -9,7 +9,7 @@ from lxml import etree
 class DataField(ndb.Model):
     name = ndb.StringProperty()
     selector = ndb.StringProperty()
-    selector_type = ndb.StringProperty(choices=['css','xpath'])
+    selector_type = ndb.StringProperty(choices=['css', 'xpath'])
     rx = ndb.StringProperty()
 
     def extract(self, html):

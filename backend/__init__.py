@@ -10,15 +10,15 @@ DEBUG = os.environ.get('SERVER_SOFTWARE', '').startswith('Dev')
 config = {}
 
 routes = [
-    
+
     # Task routes
     PathPrefixRoute('/task', [
         webapp2.Route('/runminer', 'backend.handlers.TaskHandler:run_miner',
                       'task-runminer'),
-        webapp2.Route('/runjob', 'backend.handlers.TaskHandler:run_job', 
+        webapp2.Route('/runjob', 'backend.handlers.TaskHandler:run_job',
                       'task-runjob'),
     ]),
-    
+
     # Cron routes
     PathPrefixRoute('/cron', [
         webapp2.Route('/runminers/<:\w+>',

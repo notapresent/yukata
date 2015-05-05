@@ -14,6 +14,7 @@ from models.account import Account
 from models.miner import Miner
 import forms
 
+
 class MainHandler(UserAwareHandler):
     def home(self):
         self.render_response('welcome.html')
@@ -58,7 +59,7 @@ class AccountHandler(UserAwareHandler):
     def save(self):
         if not self.current_user:
             return self.redirect(users.create_login_url(self.request.uri))
-        
+
         form = forms.AccountForm(self.request.POST)
         if form.validate():
             acc = Account.get_by_id(self.current_user.user_id())
@@ -91,7 +92,7 @@ class AccountHandler(UserAwareHandler):
         else:
             raise ValueError(form.errors)
 
-        context = {'form': form, 'create': True, 'next': next_url }
+        context = {'form': form, 'create': True, 'next': next_url}
         self.render_response('account/form.html', **context)
 
 

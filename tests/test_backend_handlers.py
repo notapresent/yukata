@@ -18,17 +18,17 @@ class CronHandlerTestCase(unittest.TestCase):
         dummy_req = webapp2.Request.blank('/')
         dummy_req.app = self.app
         self.app.set_globals(app=self.app, request=dummy_req)
-        
+
         self.testbed = testbed.Testbed()
         self.testbed.activate()
-    
+
     def tearDown(self):
         self.testbed.deactivate()
 
     def uri_for(self, route_name, *args, **kwargs):
-        return webapp2.uri_for(route_name, None, *args, **kwargs) 
-    
-    @patch('backend.handlers.TaskManager.enqueue_scheduled')    
+        return webapp2.uri_for(route_name, None, *args, **kwargs)
+
+    @patch('backend.handlers.TaskManager.enqueue_scheduled')
     def test_cron_runminers_calls_enque(self, mock_enqueue_scheduled):
         schedule = SCHEDULES.keys()[0]
         uri = self.uri_for('cron-run-scheduled-miners', schedule)
