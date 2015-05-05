@@ -5,7 +5,6 @@ from google.appengine.ext import testbed
 from . import GAETestCase
 
 from models import SCHEDULES
-from models.account import Account
 from models.miner import Miner
 
 
@@ -23,24 +22,11 @@ class MinerTestCase(GAETestCase):
         self.testbed.deactivate()
 
     def test_list_returns_empty_list(self):
-        acckey = Account(apikey='dummy').put()
-        self.assertEqual(Miner.list(ancestor=acckey), [])
+        groupkey = ndb.Key('_', '_')
+        self.assertEqual(Miner.list(ancestor=groupkey), [])
 
     def test_list_returns_one(self):
-        acckey = Account().put()
-        miner = Miner(parent=acckey, name='_', schedule=SCHEDULES.keys()[0])
+        groupkey = ndb.Key('_', '_')
+        miner = Miner(parent=groupkey, name='_', schedule=SCHEDULES.keys()[0])
         miner.put()
-        self.assertEqual(Miner.list(ancestor=acckey), [miner])
-
-    def test_enqueue_scheduled_miners_enqueues(self):
-        schedule = SCHEDULES.keys()[0]
-        miner = Miner(name='testminer', schedule=schedule)
-        miner_key = miner.put()
-        baseurl = '/'
-        n = Miner.enqueue_scheduled_miners(schedule, baseurl)
-        self.assertEqual(1, n)
-
-        tasks = self.taskqueue.get_filtered_tasks()
-        self.assertEqual(1, len(tasks))
-        self.assertIn(miner_key.urlsafe(), tasks[0].url)
-
+        self.assertEqual(Miner.list(ancestor=groupkey), [miner])
