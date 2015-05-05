@@ -46,53 +46,46 @@ class AccountHandler(UserAwareHandler):
 
     @login_required
     def edit(self):
-        if not self.current_user:
-            return self.redirect(users.create_login_url(self.request.uri))
-
-        form = forms.AccountForm(obj=self.current_account)
-        context = {
-            'form': form,
-            'create': False
-        }
-        self.render_response('account/form.html', **context)
+        accform = forms.AccountForm(obj=self.current_account)
+        self.render_response('account/form.html', form=accform)
 
     def save(self):
         if not self.current_user:
             return self.redirect(users.create_login_url(self.request.uri))
+        account = self.current_account
+        # Populate form values from POST, then add missing fields from account
+        accform = forms.AccountForm(self.request.POST, account)
 
-        form = forms.AccountForm(self.request.POST)
-        if form.validate():
-            acc = Account.get_by_id(self.current_user.user_id())
-            acc.populate(display_name=form.display_name.data)
-            acc.put()
+        if accform.validate():
+            accform.populate_obj(account)
+            account.put()
             self.redirect_to('account-view')
 
-        self.render_response('account/form.html', form=form, create=False)
+        self.render_response('account/form.html', form=accform)
 
-    def register(self):
-        if not self.current_user:
-            return self.redirect(users.create_login_url(self.request.uri))
-
+    @login_required
+    def regform(self):
         account = Account(display_name=self.current_user.nickname())
         context = {
             'form': forms.AccountRegisterForm(obj=account),
             'next': urllib.unquote_plus(self.request.get('next')),
-            'create': True
         }
         self.render_response('account/form.html', **context)
 
     def create(self):
+        if not self.current_user:
+            return self.redirect(users.create_login_url(self.request.uri))
+
         form = forms.AccountRegisterForm(self.request.POST)
         next_url = self.request.get('next') or self.uri_for('home')
+
         if form.validate():
             acc = Account(id=self.current_user.user_id())
-            acc.populate(display_name=form.display_name.data)
+            acc.display_name = form.display_name.data
             acc.put()
             return self.redirect(next_url, abort=True)
-        else:
-            raise ValueError(form.errors)
 
-        context = {'form': form, 'create': True, 'next': next_url}
+        context = {'form': form, 'next': next_url}
         self.render_response('account/form.html', **context)
 
 

@@ -10,4 +10,4 @@ class AccountForm(model_form(Account, exclude=['apikey'])):
 
 class AccountRegisterForm(AccountForm):
     accept_tos = BooleanField('I accept terms and conditions',
-                              [validators.Required()])
+                              [validators.DataRequired()])

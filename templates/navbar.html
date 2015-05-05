@@ -2,7 +2,8 @@
 
     <div id="usermenu">
         {% if account %}
-            <strong><a href="{{ uri_for('account-view') }}">{{ user.nickname() }}</a></strong>
+            <strong><a href="{{ uri_for('account-view') }}">
+                {{ account.display_name }}</a></strong>
             {% if is_admin %}
             (<a href="{{ uri_for('admin-index') }}">admin</a>)
             {% endif %}

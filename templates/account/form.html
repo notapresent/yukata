@@ -3,10 +3,10 @@
 {% block title %}{{ super() }} - {{ 'Edit' if account else 'Create' }} account{% endblock %}
 
 {% block content %}
-    <h2>{{ 'Create' if create else 'Edit' }} profile</h2>
+    <h2>{{ 'Edit' if account else 'Create' }} profile</h2>
 
     <form method="post"
-          action="{{ uri_for('account-create') if create else uri_for('account-edit') }}">
+          action="{{ uri_for('account-edit') if account else uri_for('account-create') }}">
         <input type="hidden" name="next" value="{{ next }}">
         <div>Email: {{ user.email() }}</div>
 
@@ -21,7 +21,7 @@
             {% endif %}
         </div>
 
-        {% if create %}
+        {% if not account %}
             <div>
                 {{ form.accept_tos.label }}:
                 {{ form.accept_tos(required=True) }}
@@ -33,4 +33,7 @@
         </button>
 
     </form>
+    Form data: {{ form.data }}<br>
+    Current account: {{ account }}
+
 {% endblock %}

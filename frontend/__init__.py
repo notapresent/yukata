@@ -33,7 +33,7 @@ routes = [
         RedirectRoute('/env', 'frontend.handlers.AdminHandler:env',
                       'admin-env'),
     ]),
-
+    # Account routes
     PathPrefixRoute('/account', [
         RedirectRoute('/', 'frontend.handlers.AccountHandler:view',
                       'account-view'),
@@ -41,7 +41,7 @@ routes = [
                       'account-edit', methods=['GET']),
         RedirectRoute('/edit', 'frontend.handlers.AccountHandler:save',
                       'account-edit', methods=['POST']),
-        RedirectRoute('/create', 'frontend.handlers.AccountHandler:register',
+        RedirectRoute('/create', 'frontend.handlers.AccountHandler:regform',
                       'account-create', methods=['GET']),
         RedirectRoute('/create', 'frontend.handlers.AccountHandler:create',
                       'account-create', methods=['POST'])
