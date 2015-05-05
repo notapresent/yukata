@@ -19,22 +19,29 @@ class Miner(BaseModel):
 
     # Submodels
     urlsource = ndb.LocalStructuredProperty(BaseURLSource)
-    downloader = ndb.LocalStructuredProperty(Downloader)
-    datasets = ndb.LocalStructuredProperty(DataSet, repeated=True)
+#    downloader = ndb.LocalStructuredProperty(Downloader)
+#    datasets = ndb.LocalStructuredProperty(DataSet, repeated=True)
 
     @classmethod
     def list(cls, ancestor=None):
         return cls.query(ancestor=ancestor).fetch()
 
     @classmethod
-    def enqueue_scheduled_miners(cls, schedule, task_url):
-        # TODO Add tasks in batches
+    def get_scheduled_miners(cls, schedule):
+        # TODO limit and cursor
         miners = cls.query(cls.schedule == schedule).fetch()
-        for m in miners:
-            taskqueue.add(url=task_url + m.key.urlsafe())
-        msg = "Start {} miners with {} schedule".format(len(miners), schedule)
-        logging.info(msg)
-        return len(miners)
+        for miner in miners:
+            yield miner
 
-    def run(self):
+    def start(self):
+        """ Starts a miner
+        """
         pass
+
+    def dictify(self):
+        """
+        Returns all data necessary to run miner
+        """
+        dictified = self.to_dict(exclude=['created_at', 'name', 'schedule'])
+        dictified['id'] = self.key.id()
+        return dictified

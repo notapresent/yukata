@@ -5,24 +5,28 @@ import logging
 from google.appengine.api import taskqueue
 import webapp2
 
+from models.taskmanager import TaskManager
 from models import SCHEDULES
 from models.miner import Miner
 
 
 class TaskHandler(webapp2.RequestHandler):
-    def runminer(self, miner_key):
-        miner = Miner.get_by_urlsafe(miner_key)
-        message = "Running miner {}".format(miner.name)
-        logging.info(message)
-        self.response.write(message)
-        miner.run()
-
-    def runjob(self, job_key):
-        raise NotImplementedError()
+    def run_miner(self):
+        """
+        Reconstructs miner from POST data and runs it
+        
+        """
+        miner = Miner()
+        miner.populate(self.request.POST)
+        miner.start()
+    
+    def run_job(self):
+        """
+        Reconstructs mining job from POST data and runs it
+        """
+        pass
 
 
 class CronHandler(webapp2.RequestHandler):
-    def runminers(self, schedule):
-        task_url = self.uri_for('task-runminer')
-        num_tasks = Miner.enqueue_scheduled_miners(schedule, task_url)
-        self.response.write("Started {} for {}".format(num_tasks, schedule))
+    def run_scheduled_miners(self, schedule):
+        TaskManager.enqueue_scheduled(schedule, self.uri_for('task-runminer'))

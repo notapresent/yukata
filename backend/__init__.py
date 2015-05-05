@@ -10,17 +10,20 @@ DEBUG = os.environ.get('SERVER_SOFTWARE', '').startswith('Dev')
 config = {}
 
 routes = [
+    
+    # Task routes
     PathPrefixRoute('/task', [
-        webapp2.Route('/runminer/<miner_key:[\w\-]*>',
-                      'backend.handlers.TaskHandler:runminer',
-                      'task-runminer', defaults={'miner_key': ''}),
-        webapp2.Route('/runjob/<job_key:[\w\-]+>',
-                      'backend.handlers.TaskHandler:runjob', 'task-runjob'),
+        webapp2.Route('/runminer', 'backend.handlers.TaskHandler:run_miner',
+                      'task-runminer'),
+        webapp2.Route('/runjob', 'backend.handlers.TaskHandler:run_job', 
+                      'task-runjob'),
     ]),
+    
+    # Cron routes
     PathPrefixRoute('/cron', [
-        webapp2.Route('/runminers/<schedule:\w+>',
-                      'backend.handlers.CronHandler:runminers',
-                      'cron-runminers'),
+        webapp2.Route('/runminers/<:\w+>',
+                      'backend.handlers.CronHandler:run_scheduled_miners',
+                      'cron-run-scheduled-miners'),
     ]),
 ]
 
