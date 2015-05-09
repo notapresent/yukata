@@ -6,8 +6,7 @@ from google.appengine.api import taskqueue
 import webapp2
 
 from models.taskmanager import TaskManager
-from models import SCHEDULES
-from models.miner import Miner
+from models.miner import Miner, SCHEDULES
 
 
 class TaskHandler(webapp2.RequestHandler):

@@ -4,8 +4,7 @@ from google.appengine.ext import testbed
 
 from . import GAETestCase
 
-from models import SCHEDULES
-from models.miner import Miner
+from models.miner import Miner, SCHEDULES
 
 
 class MinerTestCase(GAETestCase):

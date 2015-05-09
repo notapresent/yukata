@@ -6,7 +6,7 @@ from google.appengine.ext import testbed
 import webapp2
 from mock import patch, MagicMock
 
-from models import SCHEDULES
+from models.miner import SCHEDULES
 import backend
 from backend.handlers import TaskHandler, CronHandler
 

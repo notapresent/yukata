@@ -9,9 +9,9 @@ from google.appengine.api import users
 from webapp2_extras.appengine.users import login_required, admin_required
 from .basehandlers import UserAwareHandler
 
-from models import SCHEDULES
 from models.account import Account
-from models.miner import Miner
+from models.miner import Miner, SCHEDULES
+from models.urlsource import build_urlsource
 import forms
 
 
@@ -117,8 +117,8 @@ class MinerHandler(UserAwareHandler):
         else:
             miner = Miner.get_by_id(int(mid), parent=self.current_account.key)
 
-        form = forms.MinerForm(self.request.POST, miner)
-        self.render_response('miner/form2.html', form=form, mid=mid)
+        form = forms.MinerForm(obj=miner)
+        self.render_response('miner/form.html', form=form, mid=mid)
 
     def process_form(self, mid=None):
         if mid is None:
@@ -126,11 +126,19 @@ class MinerHandler(UserAwareHandler):
         else:
             miner = Miner.get_by_id(int(mid), parent=self.current_account.key)
 
-        form = forms.MinerForm(self.request.POST, miner)
+        form = forms.MinerForm(self.request.POST, obj=miner)
 
         if form.validate():
-            form.populate_obj(miner)
+            miner.name = form.data['name']
+            miner.schedule = form.data['schedule']
+
+            ustype = form.data['urlsource']['kind']
+            miner.urlsource = build_urlsource(ustype,
+                                              form.data['urlsource'][ustype])
+            # form.populate_obj(miner)
+            # miner.populate(**form.data)
             key = miner.put()
             return self.redirect_to('miner-view', mid=key.id())
 
-        self.render_response('miner/form2.html', form=form, mid=mid)
+        self.render_response('miner/form.html', form=form, mid=mid,
+                             po=self.request.POST)

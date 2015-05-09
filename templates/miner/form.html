@@ -1,48 +1,34 @@
 {% extends "base.html" %}
 
-{% block title %}{{ super() }} - {{ 'Edit' if miner.key.id() else 'Create' }} miner{% endblock %}
+{% import 'macros.html' as forms %}
+
+{% set pagetitle = 'Edit miner ' ~ form.data.name if mid else 'Create miner' %}
+
+{% block title %}{{ super() }} - {{ pagetitle }}{% endblock %}
 
 {% block content %}
+    <a href="{{ uri_for('miner-index') }}">Back to miner list</a>
 
-<a href="{{ uri_for('miner-index') }}">Back to miner list</a>
+    <h3>{{ pagetitle }}</h3>
 
-<h3>{{ 'Edit ' + miner.name if miner.key.id() else 'Create miner' }}</h3>
-
-<form method="post" action="{{ uri_for('miner-save') }}">
-    <div class="form-group">
-      <label for="id">ID:</label>
-      <input type="text" readonly id="id" name="id"
-             value="{{ miner.key.id() or '' }}">
-    </div>
-
-    <div class="form-group">
-      <label for="name">Name:</label>
-      <input required="required" type="text" id="name" name="name"
-             value="{{ miner.name or '' }}" placeholder="Miner name">
-    </div>
-
-    <div class="form-group">
-      <label for="schedule">Schedule:</label>
-        <select id="schedule" name="schedule">
-            {% for (k, v) in schedules.iteritems() %}
-                <option value="{{ k }}"
-                        {% if k == miner.schedule %}
-                        selected="selected"
-                        {% endif %}
-                        >{{ v }}</option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Save</button>
-
-</form>
-
-{% if miner.key.id() %}
-    <form method="post"
-          action="{{ uri_for('miner-delete', mid=miner.key.id()) }}">
-        <button onclick="javascript:return confirm('Sure?')"
-                type="submit" class="btn btn-danger">Delete</button>
+    <form action="{{ uri_for('miner-edit', mid=mid) if mid else uri_for('miner-save') }}"
+          method="POST">
+        {{ forms.form_fields(form) }}
+        <button type="submit">Save</button>
     </form>
-{% endif %}
+
+{% endblock %}
+{% block footer %}
+<script>
+$(function(){
+    $('ul#urlsource-kind input[type=radio]').change(function(){
+        $('table#urlsource > tbody > tr:not(:first-child)').addClass('hidden');
+        $('table#urlsource-' + this.value)
+                .parents('table#urlsource > tbody > tr')
+                .removeClass('hidden');
+    });
+    $('ul#urlsource-kind input:checked').triggerHandler('change');
+});
+</script>
+
 {% endblock %}

@@ -83,3 +83,15 @@ th {
 .form-group input, .form-group select {
     min-width: 300px;
 }
+
+form table { width: 100% }
+.hidden { display: none; }
+
+pre {
+    border: 1px solid #ddd;
+    background: #ffffee;
+    padding: 1em;
+}
+table#urlsource tr {
+    /*display: none;*/
+}
