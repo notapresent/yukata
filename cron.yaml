@@ -1,4 +1,8 @@
 cron:
+- description: Once a minute
+  url: /cron/runminers/1m
+  schedule: every 1 minutes  synchronized
+
 - description: Every 15 minutes
   url: /cron/runminers/15m
   schedule: every 15 minutes synchronized
