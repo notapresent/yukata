@@ -7,8 +7,13 @@ threadsafe: true
 builtins:
 - remote_api: on
 # - appstats: on
+- deferred: on
 
 handlers:
+- url: /_ah/queue/deferred
+  script: google.appengine.ext.deferred.deferred.application
+  login: admin
+
 - url: /favicon\.ico
   static_files: favicon.ico
   upload: favicon\.ico

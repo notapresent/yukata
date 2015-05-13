@@ -1,14 +1,20 @@
-from google.appengine.api import taskqueue
+from google.appengine.ext import deferred
 
-from models.miner import Miner
+import models.miner
 
 
-class TaskManager(object):
-    @classmethod
-    def enqueue_scheduled(cls, schedule, task_url):
-        """
-        Enqueue scheduled miners
-        """
-        # TODO: process in batches
-        for miner in Miner.get_scheduled_miners(schedule):
-            taskqueue.add(url=task_url, payload=miner.dictify())
+def enqueue_scheduled_miners(schedule):
+    """
+    Enqueue scheduled miners
+    """
+    # TODO: process in batches
+    for miner in models.miner.Miner.get_scheduled_miners(schedule):
+        deferred.defer(miner.mine)
+
+
+def schedule_job(method, *args):
+    deferred.defer(method, *args)
+
+
+def run_miner(miner):
+    deferred.defer(miner.mine)

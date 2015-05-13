@@ -1,15 +1,16 @@
 from __future__ import absolute_import
 import logging
+import datetime
 from collections import OrderedDict
 
 from google.appengine.api import urlfetch
-from google.appengine.api import taskqueue
 from google.appengine.ext import ndb
 
 from models import BaseModel
 from models.dataset import DataSet
-from models.urlsource import BaseURLSource
+from models.urlsource import BaseURLSource, build_urlsource
 from models.downloader import Downloader
+import models.crawl
 
 
 SCHEDULES = OrderedDict([
@@ -31,8 +32,8 @@ class Miner(BaseModel):
     # Submodels
     # urlsource = ndb.LocalStructuredProperty(BaseURLSource)
     urlsource = ndb.StructuredProperty(BaseURLSource)
-#    downloader = ndb.LocalStructuredProperty(Downloader)
-#    datasets = ndb.LocalStructuredProperty(DataSet, repeated=True)
+    downloader = ndb.StructuredProperty(Downloader)
+    datasets = ndb.LocalStructuredProperty(DataSet, repeated=True)
 
     @classmethod
     def list(cls, ancestor=None):
@@ -45,10 +46,24 @@ class Miner(BaseModel):
         for miner in miners:
             yield miner
 
-    def start(self):
-        """ Starts a miner
+    def mine(self):
+        """ Creates and starts a crawl
         """
-        pass
+        self.urlsource = build_urlsource(self.urlsource.kind,
+                                         self.urlsource.to_dict(exclude=['kind']))
+        if not self.downloader:
+            self.downloader = Downloader()
+
+        logging.info("Miner {} started mining".format(self.name))
+        crawl = models.crawl.make_crawl(self.urlsource.kind, self.key)
+        crawl.miner = self
+        crawl.run()
+
+    def process_datasets(self, html):
+        result = dict()
+        for ds in self.datasets:
+            result[ds.name] = ds.process(html)
+        return result
 
     def dictify(self):
         """
@@ -57,4 +72,3 @@ class Miner(BaseModel):
         dictified = self.to_dict(exclude=['created_at', 'name', 'schedule'])
         dictified['id'] = self.key.id()
         return dictified
-

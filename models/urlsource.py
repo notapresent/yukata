@@ -43,10 +43,22 @@ class BaseURLSource(ndb.Model):
     kind = ndb.StringProperty(required=True, choices=URLSOURCE_TYPES.keys(),
                               verbose_name='URL source type')
 
+    def num_jobs(self):
+        raise NotImplementedError
+
+    def get_urls(self):
+        raise NotImplementedError
+
 
 class SingleURLSource(BaseURLSource):
     url = ndb.StringProperty(required=True, validator=validate_http_url,
                              verbose_name='URL to crawl')
+
+    def num_jobs(self):
+        return 1
+
+    def get_urls(self):
+        return self.url
 
 
 class ChainedURLSource(BaseURLSource):
@@ -54,6 +66,9 @@ class ChainedURLSource(BaseURLSource):
                              verbose_name='Start URL')
     nextpage = ndb.LocalStructuredProperty(DataField, required=True)
     page_limit = ndb.IntegerProperty(default=1000)
+
+    def num_jobs(self):
+        return None
 
 
 class DatasetURLSource(BaseURLSource):

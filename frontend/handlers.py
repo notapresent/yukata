@@ -8,10 +8,12 @@ from pprint import pformat
 from google.appengine.api import users
 from webapp2_extras.appengine.users import login_required, admin_required
 from .basehandlers import UserAwareHandler
+from webapp2_extras import json
 
 from models.account import Account
-from models.miner import Miner, SCHEDULES
+import models.miner
 from models.urlsource import build_urlsource
+import models.taskmanager
 import forms
 
 
@@ -93,38 +95,39 @@ class MinerHandler(UserAwareHandler):
     @login_required
     def index(self):
         template_vars = {
-            'miners': Miner.list(ancestor=self.current_account.key),
-            'schedules': SCHEDULES
+            'miners': models.miner.Miner.list(ancestor=self.current_account.key),
+            'schedules': models.miner.SCHEDULES
         }
         self.render_response('miner/index.html', **template_vars)
 
     @login_required
     def view(self, mid):
-        miner = Miner.get_by_id(int(mid), parent=self.current_account.key)
-        self.render_response('miner/view.html', miner=miner, mid=mid,
-                             schedules=SCHEDULES)
+        miner = models.miner.Miner.get_by_id(int(mid), parent=self.current_account.key)
+        crawls = models.crawl.BaseCrawl.query(ancestor=miner.key).order(-models.crawl.BaseCrawl.started_at).fetch()
+        self.render_response('miner/view.html', miner=miner, mid=mid, crawls=crawls,
+                             schedules=models.miner.SCHEDULES)
 
     def delete(self, mid):
         self.check_login()
-        miner = Miner.get_by_id(int(mid), parent=self.current_account.key)
+        miner = models.miner.Miner.get_by_id(int(mid), parent=self.current_account.key)
         miner.key.delete()
         return self.redirect_to('miner-index')
 
     @login_required
     def show_form(self, mid=None):
         if mid is None:
-            miner = Miner(name='')
+            miner = models.miner.Miner(name='')
         else:
-            miner = Miner.get_by_id(int(mid), parent=self.current_account.key)
+            miner = models.miner.Miner.get_by_id(int(mid), parent=self.current_account.key)
 
         form = forms.MinerForm(obj=miner)
         self.render_response('miner/form.html', form=form, mid=mid)
 
     def process_form(self, mid=None):
         if mid is None:
-            miner = Miner(name='', parent=self.current_account.key)
+            miner = models.miner.Miner(name='', parent=self.current_account.key)
         else:
-            miner = Miner.get_by_id(int(mid), parent=self.current_account.key)
+            miner = models.miner.Miner.get_by_id(int(mid), parent=self.current_account.key)
 
         form = forms.MinerForm(self.request.POST, obj=miner)
 
@@ -142,3 +145,16 @@ class MinerHandler(UserAwareHandler):
 
         self.render_response('miner/form.html', form=form, mid=mid,
                              po=self.request.POST)
+
+    @login_required
+    def view_crawl(self, mid, cid):
+        miner = models.miner.Miner.get_by_id(int(mid), parent=self.current_account.key)
+        crawl = models.crawl.BaseCrawl.get_by_id(int(cid), parent=miner.key)
+        jobs = crawl.jobs
+        self.render_response('miner/crawl.html', miner=miner, crawl=crawl, jobs=jobs)
+
+    @login_required
+    def run(self, mid):
+        miner = models.miner.Miner.get_by_id(int(mid), parent=self.current_account.key)
+        models.taskmanager.run_miner(miner)
+        self.response.write(json.encode({'status': 'ok'}))

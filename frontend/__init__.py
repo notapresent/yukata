@@ -64,7 +64,13 @@ routes = [
                       'miner-save', methods=['POST'], defaults={'mid': None}),
         RedirectRoute('/<mid:\d+>/delete',
                       'frontend.handlers.MinerHandler:delete',
-                      'miner-delete')
+                      'miner-delete'),
+        RedirectRoute('/<mid:\d+>/run',
+                      'frontend.handlers.MinerHandler:run',
+                      'miner-run'),
+        RedirectRoute('/<mid:\d+>/crawl/<cid:\d+>',
+                      'frontend.handlers.MinerHandler:view_crawl',
+                      'miner-view-crawl')
     ]),
 ]
 

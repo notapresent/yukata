@@ -49,6 +49,10 @@ class NamedDataFieldForm(DataFieldForm):
     name = StringField('Field name')
 
 
+class DataSetForm(model_form(DataSet)):
+    pass
+
+
 class ExtraFormField(FormField):
     def validate(self, form, extra_validators=tuple()):
         # Only run extra validators, since normal validators are forbidden
@@ -91,10 +95,13 @@ class URLSourceForm(Form):
 
         super(URLSourceForm, self).process(formdata=formdata, obj=obj,
                                            data=data, **kwargs)
+
+
 class MinerForm(model_form(Miner)):
     # mid = IntegerField(widget=HiddenInput())
     # name = StringField('Miner name', [validators.Length(min=4)])
-    schedule = SelectField('Schedule',
+    schedule=SelectField('Schedule',
                            choices=SCHEDULES.items(),
                            default=SCHEDULES.items()[0][0])
-    urlsource = FormField(URLSourceForm, 'URL source settings')
+    urlsource=FormField(URLSourceForm, 'URL source settings')
+    datasets=FormField(DataSetForm, 'Dataset')

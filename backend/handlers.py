@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
-import datetime
-import logging
-
-from google.appengine.api import taskqueue
 import webapp2
 
-from models.taskmanager import TaskManager
-from models.miner import Miner, SCHEDULES
+from models import taskmanager
+# from models.miner import Miner
 
 
 class TaskHandler(webapp2.RequestHandler):
@@ -14,9 +10,10 @@ class TaskHandler(webapp2.RequestHandler):
         """
         Reconstructs miner from POST data and runs it
         """
-        miner = Miner()
-        miner.populate(self.request.POST)
-        miner.start()
+        pass
+        # miner = Miner()
+        # miner.populate(self.request.POST)
+        # miner.mine()
 
     def run_job(self):
         """
@@ -27,4 +24,4 @@ class TaskHandler(webapp2.RequestHandler):
 
 class CronHandler(webapp2.RequestHandler):
     def run_scheduled_miners(self, schedule):
-        TaskManager.enqueue_scheduled(schedule, self.uri_for('task-runminer'))
+        taskmanager.enqueue_scheduled_miners(schedule)

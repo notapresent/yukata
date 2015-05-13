@@ -16,6 +16,28 @@
 </tr>
 </table>
 
+<h4>Crawls</h4>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Started</th>
+        <th>Finished</th>
+        <th>Status</th>
+        <th>Jobs</th>
+    </tr>
+    {% for crawl in crawls %}
+    <tr>
+        <td><a href="{{ uri_for('miner-view-crawl', mid=miner.key.id(), cid=crawl.key.id()) }}">{{ crawl.key.id() }}</a></td>
+        <td>{{ crawl.started_at }}</td>
+        <td>{{ crawl.finished_at }}</td>
+        <td>{{ crawl.status }}</td>
+        <td>{{ crawl.num_jobs }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<span class="btn" id="minebutton">Mine</span>
+
 <a class="btn" href="{{ uri_for('miner-edit', mid=miner.key.id()) }}">Edit</a>
 
 <form method="post"
@@ -24,4 +46,14 @@
             type="submit" class="btn btn-danger">Delete</button>
 </form>
 
+{% endblock %}
+{% block footer %}
+{{ super() }}
+<script>
+    $("#minebutton").click(function(){
+        $.getJSON('{{ uri_for("miner-run", mid=miner.key.id()) }}',{}, function(){
+            alert('Started');
+        });
+    });
+</script>
 {% endblock %}

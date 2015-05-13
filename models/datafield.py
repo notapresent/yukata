@@ -4,7 +4,8 @@ from collections import OrderedDict
 
 from google.appengine.ext import ndb
 
-from lxml import etree
+import lxml
+
 
 
 SELECTOR_TYPES = OrderedDict([
@@ -19,11 +20,24 @@ class DataField(ndb.Model):
     selector_type = ndb.StringProperty(choices=SELECTOR_TYPES.keys())
     rx = ndb.StringProperty()
 
-    def extract(self, html):
-        pass
+    def process(self, html):
+        if self.selector_type == 'xpath':
+            return self.process_xpath(html)
+        else:
+            raise NotImplementedError
 
-    def extract_list(self, html):
-        pass
+    def process_xpath(self, html):
+        tree = lxml.etree.HTML(html)
+        results = list()
+        for elem in tree.xpath(self.selector):
+            if isinstance(elem, basestring):
+                results.append(elem)
+            elif isinstance(elem, lxml.etree._Element):
+                results.append(elem.text)
+            else:
+                raise ValueError('Not string and not etree.Element')
+
+        return results[0] if len(results) == 1 else results
 
 
 class NamedDataField(DataField):
