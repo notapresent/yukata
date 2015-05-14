@@ -9,7 +9,6 @@ from google.appengine.ext import ndb
 from models import BaseModel
 from models.dataset import DataSet
 from models.urlsource import BaseURLSource, build_urlsource
-from models.downloader import Downloader
 import models.crawl
 
 
@@ -28,12 +27,13 @@ class Miner(BaseModel):
     schedule = ndb.StringProperty(choices=SCHEDULES.keys(),
                                   required=True,
                                   default=SCHEDULES.items()[0][0])
+    # Download settings
+    rps = ndb.FloatProperty(required=True, default=0.2)  # requests per second
+    timeout = ndb.IntegerProperty(required=True, default=5)    # seconds
 
     # Submodels
     # urlsource = ndb.LocalStructuredProperty(BaseURLSource)
     urlsource = ndb.StructuredProperty(BaseURLSource)
-    downloader = ndb.StructuredProperty(Downloader)
-    datasets = ndb.LocalStructuredProperty(DataSet, repeated=True)
 
     @classmethod
     def list(cls, ancestor=None):
@@ -51,13 +51,23 @@ class Miner(BaseModel):
         """
         self.urlsource = build_urlsource(self.urlsource.kind,
                                          self.urlsource.to_dict(exclude=['kind']))
-        if not self.downloader:
-            self.downloader = Downloader()
-
         logging.info("Miner {} started mining".format(self.name))
         crawl = models.crawl.make_crawl(self.urlsource.kind, self.key)
         crawl.miner = self
         crawl.run()
+
+    @property
+    def datasets(self):
+        try:
+            return self._datasets
+        except AttributeError:
+            self._datasets = DataSet.query(ancestor=self.key).fetch()
+            return self._datasets
+
+    @datasets.setter
+    def datasets(self, value):
+        self._datasets = value
+
 
     def process_datasets(self, html):
         result = dict()

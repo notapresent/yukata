@@ -6,6 +6,7 @@ from google.appengine.ext import ndb
 from webapp2_extras import json
 
 from models import BaseModel
+from models.downloader import Downloader
 
 
 class Job(BaseModel):
@@ -16,7 +17,7 @@ class Job(BaseModel):
     saved_at = ndb.DateTimeProperty(auto_now=True)
     request_id = ndb.StringProperty()
     status = ndb.StringProperty()
-    result = ndb.JsonProperty()    # Should use either this or gzipped one
+    result = ndb.JsonProperty()
 
     def run(self, miner, crawl):
         logging.info('Running job {} from crawl {}'.format(self, self.crawl_key))
@@ -24,7 +25,8 @@ class Job(BaseModel):
         self.status = 'failure'
         try:
             self.request_id = os.environ.get('REQUEST_LOG_ID')
-            html = miner.downloader.html(self.url)
+            dldr = Downloader()
+            html = dldr.html(self.url)
             if miner.datasets:
                 self.result = miner.process_datasets(html)
             self.status = 'success'

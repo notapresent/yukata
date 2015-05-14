@@ -36,10 +36,27 @@
     {% endfor %}
 </table>
 
+<h4>Datasets</h4>
+<table>
+    {% for ds in miner.datasets %}
+        <tr>
+            <th colspan="4">{{ ds.name }}</th>
+        </tr>
+        {% for f in ds.fields %}
+            <tr>
+                <td>{{ f.name }}</td>
+                <td>{{ f.selector_type }}</td>
+                <td>{{ f.selector }}</td>
+                <td>{{ f.rx }}</td>
+            </tr>
+        {% endfor %}
+    {% endfor %}
+</table>
+
 <span class="btn" id="minebutton">Mine</span>
 
 <a class="btn" href="{{ uri_for('miner-edit', mid=miner.key.id()) }}">Edit</a>
-
+<a class="btn" href="{{ uri_for('miner-datasets-form', mid=miner.key.id()) }}">Datasets</a>
 <form method="post"
       action="{{ uri_for('miner-delete', mid=miner.key.id()) }}">
     <button onclick="javascript:return confirm('Sure?')"

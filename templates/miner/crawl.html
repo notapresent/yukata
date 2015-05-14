@@ -11,7 +11,34 @@
     <p>Finished: {{ crawl.finished_at }}</p>
     <p>Jobs count: {{ crawl.num_jobs }}</p>
     <p>Status: {{ crawl.status }}</p>
-    <p>Result: {{ crawl.result }}</p>
+
+<h4>Results</h4>
+
+{% for ds in miner.datasets %}
+
+
+<h5>Dataset {{ ds.name }}</h5>
+<table>
+    <tr>
+        {% for field in ds.fields %}
+        <th>{{ field.name }}</th>
+        {% endfor %}
+    </tr>
+    <tr>
+        {% for field in ds.fields %}
+        <td>
+            {% if crawl.result[ds.name][field.name] is iterable %}
+                {{ crawl.result[ds.name][field.name]|join('<br>')|safe }}
+            {% else %}
+                {{ crawl.result[ds.name][field.name] }}
+            {% endif %}
+
+        </td>
+        {% endfor %}
+    </tr>
+
+</table>
+{% endfor %}
 
 <h4>Jobs</h4>
 <table>
@@ -26,7 +53,7 @@
     {% for job in jobs %}
         <tr>
             <td>{{ job.seq_num }}</td>
-            <td>{{ job.key.id() }}</td>
+            <td><a href="{{ uri_for('miner-view-job', jid=job.key.id()) }}">{{ job.key.id() }}</a></td>
             <td><a href="{{ job.url }}">{{ job.url }}</a></td>
             <td>{{ job.created_at }}</td>
             <td>{{ job.saved_at }}</td>
@@ -35,4 +62,5 @@
     {% endfor %}
 </table>
 
+<p>Result JSON:<pre>{{ crawl.result|pprint }}</pre></p>
 {% endblock %}

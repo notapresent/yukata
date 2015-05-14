@@ -4,8 +4,7 @@ from collections import OrderedDict
 
 from google.appengine.ext import ndb
 
-import lxml
-
+from lxml import etree, cssselect
 
 
 SELECTOR_TYPES = OrderedDict([
@@ -23,22 +22,37 @@ class DataField(ndb.Model):
     def process(self, html):
         if self.selector_type == 'xpath':
             return self.process_xpath(html)
+        elif self.selector_type == 'css':
+            return self.process_css(html)
         else:
             raise NotImplementedError
 
     def process_xpath(self, html):
-        tree = lxml.etree.HTML(html)
+        tree = etree.HTML(html)
         results = list()
         for elem in tree.xpath(self.selector):
             if isinstance(elem, basestring):
                 results.append(elem)
-            elif isinstance(elem, lxml.etree._Element):
+            elif isinstance(elem, etree._Element):
                 results.append(elem.text)
             else:
                 raise ValueError('Not string and not etree.Element')
 
         return results[0] if len(results) == 1 else results
 
+    def process_css(self, html):
+        sel = cssselect.CSSSelector(self.selector)
+        tree = tree = etree.HTML(html)
+        results = list()
+        for elem in sel(tree):
+            if isinstance(elem, basestring):
+                results.append(elem)
+            elif isinstance(elem, etree._Element):
+                results.append(elem.text)
+            else:
+                raise ValueError('Not string and not etree.Element')
+
+        return results[0] if len(results) == 1 else results
 
 class NamedDataField(DataField):
     name = ndb.StringProperty()

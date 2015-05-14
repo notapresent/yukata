@@ -70,7 +70,16 @@ routes = [
                       'miner-run'),
         RedirectRoute('/<mid:\d+>/crawl/<cid:\d+>',
                       'frontend.handlers.MinerHandler:view_crawl',
-                      'miner-view-crawl')
+                      'miner-view-crawl'),
+        RedirectRoute('/<mid:\d+>/edit-datasets',
+                      'frontend.handlers.MinerHandler:show_datasets_form',
+                      'miner-datasets-form', methods=['GET']),
+        RedirectRoute('/<mid:\d+>/edit-datasets',
+                      'frontend.handlers.MinerHandler:process_datasets_form',
+                      'miner-datasets-save', methods=['POST']),
+        RedirectRoute('/job/<jid:\d+>',
+                      'frontend.handlers.MinerHandler:view_job',
+                      'miner-view-job')
     ]),
 ]
 

@@ -17,6 +17,10 @@
         <button type="submit">Save</button>
     </form>
 
+{% if mid %}
+    <a href="{{ uri_for('miner-datasets-form', mid=mid) }}">Edit datasets</a>
+{% endif %}
+
 {% endblock %}
 {% block footer %}
 <script>

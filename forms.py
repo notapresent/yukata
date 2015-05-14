@@ -1,7 +1,7 @@
 import itertools
 
 from wtforms import (Form, BooleanField, StringField, HiddenField, validators,
-                     IntegerField, SelectField, FormField, RadioField)
+                     IntegerField, SelectField, FormField, RadioField, FieldList)
 from wtforms_appengine.ndb import model_form, KeyPropertyField
 from wtforms.utils import unset_value
 from wtforms.compat import with_metaclass, iteritems, itervalues
@@ -43,14 +43,17 @@ class DataSetURLSourceForm(model_form(DatasetURLSource,  exclude=['kind'])):
 
 
 class NamedDataFieldForm(DataFieldForm):
-    """
-    Form for single datafield
-    """
     name = StringField('Field name')
 
 
 class DataSetForm(model_form(DataSet)):
-    pass
+    dsid = HiddenField()
+    delete = BooleanField()
+    fields = FieldList(FormField(NamedDataFieldForm))
+
+
+class DataSetsForm(Form):
+    datasets = FieldList(FormField(DataSetForm))
 
 
 class ExtraFormField(FormField):
@@ -67,8 +70,8 @@ class ExtraFormField(FormField):
 
 class URLSourceForm(Form):
     kind = RadioField('URL source type',
-                                choices=URLSOURCE_TYPES.items(),
-                                default=URLSOURCE_TYPES.items()[0][0])
+                      choices=URLSOURCE_TYPES.items(),
+                      default=URLSOURCE_TYPES.items()[0][0])
     single = ExtraFormField(SingleURLSourceForm, default=None)
     chained = ExtraFormField(ChainedURLSourceForm, default=None)
     dataset = ExtraFormField(DataSetURLSourceForm, default=None)
@@ -98,10 +101,8 @@ class URLSourceForm(Form):
 
 
 class MinerForm(model_form(Miner)):
-    # mid = IntegerField(widget=HiddenInput())
-    # name = StringField('Miner name', [validators.Length(min=4)])
-    schedule=SelectField('Schedule',
+    schedule = SelectField('Schedule',
                            choices=SCHEDULES.items(),
                            default=SCHEDULES.items()[0][0])
-    urlsource=FormField(URLSourceForm, 'URL source settings')
-    datasets=FormField(DataSetForm, 'Dataset')
+    urlsource = FormField(URLSourceForm, 'URL source settings')
+

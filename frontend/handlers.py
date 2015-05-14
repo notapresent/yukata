@@ -14,6 +14,8 @@ from models.account import Account
 import models.miner
 from models.urlsource import build_urlsource
 import models.taskmanager
+from models.dataset import DataSet
+from models.datafield import NamedDataField
 import forms
 
 
@@ -138,13 +140,67 @@ class MinerHandler(UserAwareHandler):
             ustype = form.data['urlsource']['kind']
             miner.urlsource = build_urlsource(ustype,
                                               form.data['urlsource'][ustype])
-            # form.populate_obj(miner)
-            # miner.populate(**form.data)
             key = miner.put()
             return self.redirect_to('miner-view', mid=key.id())
 
         self.render_response('miner/form.html', form=form, mid=mid,
                              po=self.request.POST)
+
+    @login_required
+    def show_datasets_form(self, mid):
+        miner = models.miner.Miner.get_by_id(int(mid), parent=self.current_account.key)
+        datasets = miner.datasets
+
+        new_field_template = NamedDataField()
+
+        datasets.append({'name': '', 'fields': []})
+        for ds in miner.datasets:
+            if isinstance(ds, DataSet):
+                ds.dsid = ds.key.id()
+                ds.fields.append(new_field_template)
+            else:
+                ds['fields'].append(new_field_template.to_dict())
+        form = forms.DataSetsForm(datasets=datasets)
+        self.render_response('miner/datasetform.html', form=form, mid=mid,
+                             po=self.request.POST, fo=form.data)
+
+    def process_datasets_form(self, mid):
+        miner = models.miner.Miner.get_by_id(int(mid), parent=self.current_account.key)
+        form = forms.DataSetsForm(self.request.POST)
+
+        if form.validate():
+            for ds in form.data['datasets']:
+                if not ds['name']:
+                    continue
+
+                if ds['dsid']:
+                    dataset = DataSet.get_by_id(int(ds['dsid']), parent=miner.key)
+                    if ds['delete']:
+                        dataset.key.delete()
+                        continue
+
+                    dataset.fields = []
+                else:
+                    dataset = DataSet(name=ds['name'], parent=miner.key)
+                    dataset.fields = []
+
+                for f in ds['fields']:
+                    if f['name']:
+                        field = NamedDataField(**f)
+                        dataset.fields.append(field)
+                dataset.put()
+
+            return self.redirect_to('miner-view', mid=mid)
+
+        self.render_response('miner/datasetform.html', form=form, mid=mid,
+                             po=self.request.POST, fo=form.data)
+
+    @login_required
+    def view_job(self, jid):
+        job = models.job.Job.get_by_id(int(jid))
+        crawl = job.crawl_key.get()
+        miner = crawl.key.parent().get()
+        self.render_response('miner/job.html', job=job, crawl=crawl, miner=miner)
 
     @login_required
     def view_crawl(self, mid, cid):
