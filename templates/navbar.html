@@ -10,7 +10,7 @@
             | <a href="{{ logout_url }}">logout</a>
         {% elif user %}
             Signed in as {{ user.nickname() }} |
-            <a href="{{ uri_for('account-edit') }}">Create account</a>
+            <a href="{{ uri_for('account-create') }}">Create account</a>
             | <a href="{{ logout_url }}">logout</a>
         {% else %}
             <a class="googlelogin" href="{{ login_url }}"></a>
