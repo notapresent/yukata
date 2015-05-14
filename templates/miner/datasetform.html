@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% import 'macros.html' as forms %}
+
+{% set pagetitle = 'Edit datasets for miner ' ~ form.data.name %}
+
+{% block title %}{{ super() }} - {{ pagetitle }}{% endblock %}
+
+{% block content %}
+    <a href="{{ uri_for('miner-index') }}">Back to miner list</a><br>
+    <a href="{{ uri_for('miner-view', mid=mid) }}">Back to miner page</a>
+
+    <h3>{{ pagetitle }}</h3>
+
+    <form action="{{ uri_for('miner-datasets-save', mid=mid) }}"
+          method="POST">
+        {{ forms.form_fields(form) }}
+        <button type="submit">Save</button>
+    </form>
+
+<pre>{{ po|pprint }}</pre>
+<pre>{{ fo|pprint }}</pre>
+
+
+
+{% endblock %}
+{% block footer %}
+<script>
+$(function(){
+    $('ul#datasets input:checkbox').change(function() {
+        $(this).parents('table').find('tr:nth-child(3)').toggle();
+    });
+});
+</script>
+
+{% endblock %}

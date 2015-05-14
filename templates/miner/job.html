@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}{{ super() }} - View job #{{ job.key.id() }}{% endblock %}
+
+{% block content %}
+    <a href="{{ uri_for('miner-view', mid=miner.key.id()) }}">Back to miner</a>
+    <a href="{{ uri_for('miner-view-crawl', mid=miner.key.id(), cid=crawl.key.id()) }}">Back to crawl</a>
+
+    <h3>View job #{{ job.key.id() }}</h3>
+
+    <table>
+        <tr><th>Sequence number</th><td>{{ job.seq_num }}</td></tr>
+        <tr><th>URL</th><td><a href="{{ job.url }}">{{ job.url }}</a></td></tr>
+        <tr><th>Created</th><td>{{ job.created_at}}</td></tr>
+        <tr><th>Saved</th><td>{{ job.saved_at }}</td></tr>
+        <tr><th>Request ID</th><td>{{ job.request_id }}</td></tr>
+        <tr><th>Status</th><td>{{ job.status }}</td></tr>
+    </table>
+
+    <h4>Results</h4>
+
+    <p>
+        <pre>{{ job.result|pprint }}</pre>
+    </p>
+{% endblock %}
