@@ -2,7 +2,7 @@
 import webapp2
 
 from models import taskmanager
-# from models.miner import Miner
+from models.miner import Miner
 
 
 class TaskHandler(webapp2.RequestHandler):
@@ -10,18 +10,23 @@ class TaskHandler(webapp2.RequestHandler):
         """
         Reconstructs miner from POST data and runs it
         """
-        pass
-        # miner = Miner()
-        # miner.populate(self.request.POST)
-        # miner.mine()
+        miner = taskmanager.unpack(self.request.body)
+        miner.run()
 
     def run_job(self):
         """
-        Reconstructs mining job from POST data and runs it
+        Reconstructs job, crawl and miner from POST data and runs job
         """
-        pass
+        miner, crawl, job = taskmanager.unpack(self.request.body)
+
+        print 'Request length: ', len(self.request.body)
+
+        job.run(miner, crawl)
 
 
 class CronHandler(webapp2.RequestHandler):
     def run_scheduled_miners(self, schedule):
-        taskmanager.enqueue_scheduled_miners(schedule)
+        url = self.uri_for('task-runminer')
+        miners = Miner.get_scheduled_miners(schedule)
+        for miner in miners:
+            taskmanager.run_miner('task-runminer', miner)

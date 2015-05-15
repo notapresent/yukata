@@ -6,7 +6,7 @@ from google.appengine.ext import ndb
 
 from models import BaseModel
 from models.job import Job
-import models
+from models import taskmanager
 
 
 def make_crawl(urlsource_kind, parent_key):
@@ -36,19 +36,19 @@ class BaseCrawl(BaseModel):
 
 
 class SingleCrawl(BaseCrawl):
-    def run(self):
+    def run(self, miner):
         self.started_at = datetime.datetime.utcnow()
         self.num_jobs = 1
-        key = self.put()
-        self.start()
+        self.put()
+        self.start(miner)
 
-    def start(self):
+    def start(self, miner):
         logging.info('Started crawl {}'.format(self))
-        url = self.miner.urlsource.url
+        url = miner.urlsource.url
         job = Job(crawl_key=self.key, url=url, created_at=datetime.datetime.utcnow(),
                   seq_num=0)
         job.on_complete = self.finish
-        models.taskmanager.schedule_job(job.run, self.miner, self)
+        taskmanager.run_job('/task/runjob', miner, self, job)
 
     def finish(self, status, result):
         self.finished_at = datetime.datetime.utcnow()

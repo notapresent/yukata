@@ -1,20 +1,24 @@
-from google.appengine.ext import deferred
+import pickle
+from google.appengine.api import taskqueue
 
-import models.miner
+
+def pack(value):
+    return pickle.dumps(value, pickle.HIGHEST_PROTOCOL)
 
 
-def enqueue_scheduled_miners(schedule):
+def unpack(value):
+    return pickle.loads(value)
+
+
+def run_miner(url, miner):
     """
-    Enqueue scheduled miners
+    Add miner to task queue
     """
-    # TODO: process in batches
-    for miner in models.miner.Miner.get_scheduled_miners(schedule):
-        deferred.defer(miner.mine)
+    taskqueue.add(url=url, payload=pack(miner))
 
 
-def schedule_job(method, *args):
-    deferred.defer(method, *args)
-
-
-def run_miner(miner):
-    deferred.defer(miner.mine)
+def run_job(url, miner, crawl, job):
+    """
+    Add job to task queue
+    """
+    taskqueue.add(url=url, payload=pack((miner, crawl, job)))

@@ -18,6 +18,8 @@
 
 
 <h5>Dataset {{ ds.name }}</h5>
+
+{% if crawl.result[ds.name] %}
 <table>
     <tr>
         {% for field in ds.fields %}
@@ -38,6 +40,10 @@
     </tr>
 
 </table>
+{% else %}
+    <em>No results for this dataset</em>
+{% endif %}
+
 {% endfor %}
 
 <h4>Jobs</h4>

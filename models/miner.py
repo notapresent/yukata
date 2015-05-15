@@ -3,13 +3,12 @@ import logging
 import datetime
 from collections import OrderedDict
 
-from google.appengine.api import urlfetch
 from google.appengine.ext import ndb
 
 from models import BaseModel
 from models.dataset import DataSet
 from models.urlsource import BaseURLSource, build_urlsource
-import models.crawl
+from models.crawl import make_crawl
 
 
 SCHEDULES = OrderedDict([
@@ -46,15 +45,14 @@ class Miner(BaseModel):
         for miner in miners:
             yield miner
 
-    def mine(self):
+    def run(self):
         """ Creates and starts a crawl
         """
         self.urlsource = build_urlsource(self.urlsource.kind,
                                          self.urlsource.to_dict(exclude=['kind']))
         logging.info("Miner {} started mining".format(self.name))
-        crawl = models.crawl.make_crawl(self.urlsource.kind, self.key)
-        crawl.miner = self
-        crawl.run()
+        crawl = make_crawl(self.urlsource.kind, self.key)
+        crawl.run(self)
 
     @property
     def datasets(self):

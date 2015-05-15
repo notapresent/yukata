@@ -212,5 +212,5 @@ class MinerHandler(UserAwareHandler):
     @login_required
     def run(self, mid):
         miner = models.miner.Miner.get_by_id(int(mid), parent=self.current_account.key)
-        models.taskmanager.run_miner(miner)
+        models.taskmanager.run_miner('/task/runminer', miner)
         self.response.write(json.encode({'status': 'ok'}))

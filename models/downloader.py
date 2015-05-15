@@ -9,4 +9,4 @@ from models import BaseModel
 class Downloader(object):
     def html(self, url, timeout=5):
         result = urlfetch.fetch(url=url, deadline=timeout)
-        return result.content.decode('utf-8')
+        return result.content
