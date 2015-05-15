@@ -7,8 +7,8 @@ from google.appengine.ext import ndb
 
 from models import BaseModel
 from models.dataset import DataSet
-from models.urlsource import BaseURLSource, build_urlsource
-from models.crawl import make_crawl
+from models.urlsource import BaseURLSource
+from models.crawl import BaseCrawl
 
 
 SCHEDULES = OrderedDict([
@@ -45,14 +45,14 @@ class Miner(BaseModel):
         for miner in miners:
             yield miner
 
-    def run(self):
+    def run(self, job_url):
         """ Creates and starts a crawl
         """
-        self.urlsource = build_urlsource(self.urlsource.kind,
-                                         self.urlsource.to_dict(exclude=['kind']))
         logging.info("Miner {} started mining".format(self.name))
-        crawl = make_crawl(self.urlsource.kind, self.key)
-        crawl.run(self)
+        self.urlsource = BaseURLSource.factory(self.urlsource.to_dict())
+
+        crawl = BaseCrawl.factory(self, job_url)
+        crawl.run()
 
     @property
     def datasets(self):

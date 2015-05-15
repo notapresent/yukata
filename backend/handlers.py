@@ -11,7 +11,8 @@ class TaskHandler(webapp2.RequestHandler):
         Reconstructs miner from POST data and runs it
         """
         miner = taskmanager.unpack(self.request.body)
-        miner.run()
+        job_url = self.uri_for('task-runjob')
+        miner.run(job_url)
 
     def run_job(self):
         """

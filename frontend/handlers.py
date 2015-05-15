@@ -12,7 +12,7 @@ from webapp2_extras import json
 
 from models.account import Account
 import models.miner
-from models.urlsource import build_urlsource
+from models.urlsource import BaseURLSource
 import models.taskmanager
 from models.dataset import DataSet
 from models.datafield import NamedDataField
@@ -136,10 +136,10 @@ class MinerHandler(UserAwareHandler):
         if form.validate():
             miner.name = form.data['name']
             miner.schedule = form.data['schedule']
-
-            ustype = form.data['urlsource']['kind']
-            miner.urlsource = build_urlsource(ustype,
-                                              form.data['urlsource'][ustype])
+            urlsource_kind = form.data['urlsource']['kind']
+            urlsource_params = {'kind': urlsource_kind}
+            urlsource_params.update(form.data['urlsource'][urlsource_kind])
+            miner.urlsource = BaseURLSource.factory(urlsource_params)
             key = miner.put()
             return self.redirect_to('miner-view', mid=key.id())
 

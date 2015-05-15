@@ -32,14 +32,7 @@ def normalize_http_url(url):
     return urlparse.urlsplit(url).geturl()
 
 
-def build_urlsource(urlsource_type, params):
-    class_name = "{}URLSource".format(urlsource_type.title())
-    class_ = getattr(sys.modules[__name__], class_name)
-    obj = class_(kind=urlsource_type, **params)
-    return obj
-
-
-class BaseURLSource(ndb.Model):
+class BaseURLSource(BaseModel):
     kind = ndb.StringProperty(required=True, choices=URLSOURCE_TYPES.keys(),
                               verbose_name='URL source type')
 
@@ -48,6 +41,15 @@ class BaseURLSource(ndb.Model):
 
     def get_urls(self):
         raise NotImplementedError
+
+    @staticmethod
+    def factory(urlsource_dict):
+        kind = urlsource_dict['kind']
+        class_name = "{}URLSource".format(kind.title())
+        class_obj = getattr(sys.modules[__name__], class_name)
+        instance = class_obj(kind=kind)
+        instance.populate(**urlsource_dict)
+        return instance
 
 
 class SingleURLSource(BaseURLSource):
