@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}{{ super() }} - Robots - {{ robot.name }}{% endblock %}
+
+{% block content %}
+<a href="{{ uri_for('robot-index') }}">Back to robot list</a>
+
+    <h3>Robot {{ robot.name }}</h3>
+
+<table class="table table-bordered">
+<tr>
+    <th>ID</th><td>{{ robot.key.id() }}</td>
+</tr>
+<tr>
+    <th>Schedule</th><td>{{ schedules[robot.schedule] }}</td>
+</tr>
+<tr>
+    <th>Requests per second</th><td>{{ robot.rps }}</td>
+</tr>
+<tr>
+    <th>Timeout</th><td>{{ robot.timeout }}</td>
+</tr>
+
+<tr>
+    <th>URL source</th>
+    <td>
+        <h4>{{ robot.urlsource.class_name }}</h4>
+        {% for name, value in robot.urlsource.to_dict(exclude=['class_']).iteritems() %}
+        <strong>{{ name }}</strong>: {{ value }}<br>
+        {% endfor %}
+    </td>
+</tr>
+</table>
+
+<h4>Crawls</h4>
+{% if crawls %}
+    <table class="table table-bordered">
+        <tr>
+            <th>ID</th>
+            <th>Started</th>
+            <th>Finished</th>
+            <th>Status</th>
+            <th>Jobs</th>
+        </tr>
+        {% for crawl in crawls %}
+        <tr>
+            <td><a href="{{ uri_for('robot-view-crawl', mid=robot.key.id(), cid=crawl.key.id()) }}">{{ crawl.key.id() }}</a></td>
+            <td>{{ crawl.started_at }}</td>
+            <td>{{ crawl.finished_at }}</td>
+            <td>{{ crawl.status }}</td>
+            <td>{{ crawl.num_jobs }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p><em>No crawls yet</em></p>
+{% endif %}
+
+<h4>Datasets</h4>
+{% if datasets %}
+    <table class="table table-bordered">
+        {% for ds in robot.datasets %}
+            <tr>
+                <th colspan="4">{{ ds.name }}</th>
+            </tr>
+            {% for f in ds.fields %}
+                <tr>
+                    <td>{{ f.name }}</td>
+                    <td>{{ f.selector_type }}</td>
+                    <td>{{ f.selector }}</td>
+                    <td>{{ f.rx }}</td>
+                </tr>
+            {% endfor %}
+        {% endfor %}
+    </table>
+{% else %}
+    <p><em>No datasets yet</em></p>
+{% endif %}
+<button type="button" class="btn btn-primary" id="minebutton">Mine</button>
+
+<a class="btn btn-default" href="{{ uri_for('robot-edit', mid=robot.key.id()) }}">Edit</a>
+<a class="btn btn-default" href="{{ uri_for('robot-datasets-form', mid=robot.key.id()) }}">Datasets</a>
+<button id="deletebutton" type="button" class="btn btn-danger">Delete</button>
+
+{% endblock %}
+{% block footer %}
+{{ super() }}
+<script>
+    $("#minebutton").click(function(){
+        $.getJSON('{{ uri_for("robot-run", mid=robot.key.id()) }}',{}, function(){
+            alert('Started');
+        });
+    });
+
+    $("#deletebutton").click(function(){
+        if(confirm('Sure?')) {
+            $.ajax({
+                type: "POST",
+                url: "{{ uri_for('robot-delete', mid=robot.key.id()) }}",
+                async: false
+            });
+            window.location.replace( "{{ uri_for('robot-index') }}");
+        } else {
+            return false;
+        }
+    });
+</script>
+{% endblock %}

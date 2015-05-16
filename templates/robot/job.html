@@ -3,8 +3,8 @@
 {% block title %}{{ super() }} - View job #{{ job.key.id() }}{% endblock %}
 
 {% block content %}
-    <a href="{{ uri_for('miner-view', mid=miner.key.id()) }}">Back to miner</a>
-    <a href="{{ uri_for('miner-view-crawl', mid=miner.key.id(), cid=crawl.key.id()) }}">Back to crawl</a>
+    <a href="{{ uri_for('robot-view', mid=robot.key.id()) }}">Back to robot</a>
+    <a href="{{ uri_for('robot-view-crawl', mid=robot.key.id(), cid=crawl.key.id()) }}">Back to crawl</a>
 
     <h3>View job #{{ job.key.id() }}</h3>
 

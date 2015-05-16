@@ -7,7 +7,7 @@ from google.appengine.ext import ndb
 
 from models import BaseModel
 from models.dataset import DataSet
-from models.urlsource import BaseURLSource
+from models.urlsource import URLSource
 from models.crawl import BaseCrawl
 
 
@@ -20,9 +20,9 @@ SCHEDULES = OrderedDict([
 ])
 
 
-class Miner(BaseModel):
+class Robot(BaseModel):
     created_at = ndb.DateTimeProperty(auto_now_add=True, indexed=False)
-    name = ndb.StringProperty(required=True, default='Anonymous miner')
+    name = ndb.StringProperty(required=False)
     schedule = ndb.StringProperty(choices=SCHEDULES.keys(),
                                   required=True,
                                   default=SCHEDULES.items()[0][0])
@@ -32,24 +32,24 @@ class Miner(BaseModel):
 
     # Submodels
     # urlsource = ndb.LocalStructuredProperty(BaseURLSource)
-    urlsource = ndb.StructuredProperty(BaseURLSource)
+    urlsource = ndb.StructuredProperty(URLSource)
 
     @classmethod
     def list(cls, ancestor=None):
         return cls.query(ancestor=ancestor).fetch()
 
     @classmethod
-    def get_scheduled_miners(cls, schedule):
+    def get_scheduled_robots(cls, schedule):
         # TODO limit and cursor
-        miners = cls.query(cls.schedule == schedule).fetch()
-        for miner in miners:
-            yield miner
+        robots = cls.query(cls.schedule == schedule).fetch()
+        for robot in robots:
+            yield robot
 
     def run(self, job_url):
         """ Creates and starts a crawl
         """
-        logging.info("Miner {} started mining".format(self.name))
-        self.urlsource = BaseURLSource.factory(self.urlsource.to_dict())
+        logging.info("Robot {} started mining".format(self.name))
+        self.urlsource = URLSource.factory(self.urlsource.to_dict())
 
         crawl = BaseCrawl.factory(self, job_url)
         crawl.run()
@@ -75,7 +75,7 @@ class Miner(BaseModel):
 
     def dictify(self):
         """
-        Returns all data necessary to run miner
+        Returns all data necessary to run robot
         """
         dictified = self.to_dict(exclude=['created_at', 'name', 'schedule'])
         dictified['id'] = self.key.id()

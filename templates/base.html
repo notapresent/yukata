@@ -1,23 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-
-    {% block head %}  
+    {% block head %}
     <meta charset="utf-8">
-
-    <meta name="description" content="">
-    <meta name="author" content="">
     <link rel="icon" href="/favicon.ico">
 
-    <title>{% block title %}webminery{% endblock %}</title>
+    <title>{% block title %}Robots{% endblock %}</title>
+
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <link href="/static/css/main.css" rel="stylesheet">
+
     {% endblock %}
   </head>
 
   <body>
-    <div id="container">
+    <div class="container">
       {% include 'navbar.html' %}
         <div id="content">
             {% block content %}{% endblock %}
@@ -25,8 +22,7 @@
     </div> <!-- /container -->
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
     {% block footer %}{% endblock %}
   </body>

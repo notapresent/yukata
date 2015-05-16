@@ -13,17 +13,17 @@ routes = [
 
     # Task routes
     PathPrefixRoute('/task', [
-        webapp2.Route('/runminer', 'backend.handlers.TaskHandler:run_miner',
-                      'task-runminer'),
+        webapp2.Route('/runrobot', 'backend.handlers.TaskHandler:run_robot',
+                      'task-runrobot'),
         webapp2.Route('/runjob', 'backend.handlers.TaskHandler:run_job',
                       'task-runjob'),
     ]),
 
     # Cron routes
     PathPrefixRoute('/cron', [
-        webapp2.Route('/runminers/<:\w+>',
-                      'backend.handlers.CronHandler:run_scheduled_miners',
-                      'cron-run-scheduled-miners'),
+        webapp2.Route('/runrobots/<:\w+>',
+                      'backend.handlers.CronHandler:run_scheduled_robots',
+                      'cron-run-scheduled-robots'),
     ]),
 ]
 

@@ -1,16 +1,16 @@
 cron:
 - description: Once a minute
-  url: /cron/runminers/1m
+  url: /cron/runrobots/1m
   schedule: every 1 minutes  synchronized
 
 - description: Every 15 minutes
-  url: /cron/runminers/15m
+  url: /cron/runrobots/15m
   schedule: every 15 minutes synchronized
 
 - description: Every hour
-  url: /cron/runminers/1h
+  url: /cron/runrobots/1h
   schedule: every 1 hours synchronized
 
 - description: Once a day at 00:05 UTC
-  url: /cron/runminers/1d
+  url: /cron/runrobots/1d
   schedule: every day 00:05

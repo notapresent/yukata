@@ -6,7 +6,7 @@ from google.appengine.ext import testbed
 import webapp2
 from mock import patch, MagicMock
 
-from models.miner import SCHEDULES
+from models.robot import SCHEDULES
 import backend
 from backend.handlers import TaskHandler, CronHandler
 
@@ -29,10 +29,10 @@ class CronHandlerTestCase(unittest.TestCase):
         return webapp2.uri_for(route_name, None, *args, **kwargs)
 
     @patch('backend.handlers.TaskManager.enqueue_scheduled')
-    def test_cron_runminers_calls_enque(self, mock_enqueue_scheduled):
+    def test_cron_runrobots_calls_enque(self, mock_enqueue_scheduled):
         schedule = SCHEDULES.keys()[0]
-        uri = self.uri_for('cron-run-scheduled-miners', schedule)
-        runminer_uri = self.uri_for('task-runminer')
+        uri = self.uri_for('cron-run-scheduled-robots', schedule)
+        runrobot_uri = self.uri_for('task-runrobot')
         response = self.app.get_response(uri)
         self.assertEqual(200, response.status_int)
-        mock_enqueue_scheduled.assert_called_once_with(schedule, runminer_uri)
+        mock_enqueue_scheduled.assert_called_once_with(schedule, runrobot_uri)

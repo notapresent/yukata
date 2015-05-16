@@ -4,12 +4,12 @@ from google.appengine.ext import testbed
 
 from . import GAETestCase
 
-from models.miner import Miner, SCHEDULES
+from models.robot import Robot, SCHEDULES
 
 
-class MinerTestCase(GAETestCase):
+class RobotTestCase(GAETestCase):
     def setUp(self):
-        super(MinerTestCase, self).setUp()
+        super(RobotTestCase, self).setUp()
         self.testbed.init_datastore_v3_stub()
         self.testbed.init_memcache_stub()
         self.testbed.init_taskqueue_stub()
@@ -20,10 +20,10 @@ class MinerTestCase(GAETestCase):
 
     def test_list_returns_empty_list(self):
         groupkey = ndb.Key('_', '_')
-        self.assertEqual(Miner.list(ancestor=groupkey), [])
+        self.assertEqual(Robot.list(ancestor=groupkey), [])
 
     def test_list_returns_one(self):
         groupkey = ndb.Key('_', '_')
-        miner = Miner(parent=groupkey, name='_', schedule=SCHEDULES.keys()[0])
-        miner.put()
-        self.assertEqual(Miner.list(ancestor=groupkey), [miner])
+        robot = Robot(parent=groupkey, name='_', schedule=SCHEDULES.keys()[0])
+        robot.put()
+        self.assertEqual(Robot.list(ancestor=groupkey), [robot])

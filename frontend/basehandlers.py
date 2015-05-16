@@ -1,12 +1,12 @@
 from __future__ import absolute_import
 import urllib
 
+from google.appengine.ext import ndb
 from google.appengine.api import users
 
 import webapp2
 from webapp2_extras import jinja2
-from webapp2_extras.appengine.users import login_required, admin_required
-from models.account import Account
+from webapp2_extras.appengine.users import login_required, admin_required   # TODO use this
 
 
 class BaseHandler(webapp2.RequestHandler):
@@ -17,7 +17,8 @@ class BaseHandler(webapp2.RequestHandler):
     def __init__(self, request, response):
         self.initialize(request, response)
         self.jinja2_context = {
-            'request': self.request
+            'request': self.request,
+            'getattr': getattr
         }
 
     @webapp2.cached_property
@@ -45,7 +46,6 @@ class UserAwareHandler(BaseHandler):
         self.is_admin = users.is_current_user_admin()
         self.jinja2_context.update({
             'user': self.current_user,
-            'account': self.current_account,
             'is_admin': self.is_admin,
             'login_url': self.login_url,
             'logout_url': self.logout_url
@@ -53,14 +53,10 @@ class UserAwareHandler(BaseHandler):
 
     @webapp2.cached_property
     def current_user(self):
-        return users.get_current_user()
-
-    @webapp2.cached_property
-    def current_account(self):
-        if self.current_user:
-            return Account.get_by_id(self.current_user.user_id())
-        else:
-            return None
+        user = users.get_current_user()
+        if user:
+            user.key = ndb.Key('User', user.user_id())
+        return user
 
     def check_login(self):
         if not self.current_user:

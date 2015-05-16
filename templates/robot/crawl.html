@@ -3,7 +3,7 @@
 {% block title %}{{ super() }} - View crawl #{{ crawl.key.id() }}{% endblock %}
 
 {% block content %}
-    <a href="{{ uri_for('miner-view', mid=miner.key.id()) }}">Back to miner</a>
+    <a href="{{ uri_for('robot-view', mid=robot.key.id()) }}">Back to robot</a>
 
     <h3>View crawl #{{ crawl.key.id() }}</h3>
 
@@ -14,7 +14,7 @@
 
 <h4>Results</h4>
 
-{% for ds in miner.datasets %}
+{% for ds in robot.datasets %}
 
 
 <h5>Dataset {{ ds.name }}</h5>
@@ -59,7 +59,7 @@
     {% for job in jobs %}
         <tr>
             <td>{{ job.seq_num }}</td>
-            <td><a href="{{ uri_for('miner-view-job', jid=job.key.id()) }}">{{ job.key.id() }}</a></td>
+            <td><a href="{{ uri_for('robot-view-job', jid=job.key.id()) }}">{{ job.key.id() }}</a></td>
             <td><a href="{{ job.url }}">{{ job.url }}</a></td>
             <td>{{ job.created_at }}</td>
             <td>{{ job.saved_at }}</td>

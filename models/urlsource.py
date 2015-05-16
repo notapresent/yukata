@@ -5,16 +5,15 @@ import urlparse
 from collections import OrderedDict
 
 from google.appengine.ext import ndb
+from google.appengine.ext.ndb import polymodel
 
 from models import BaseModel
 from models.datafield import DataField
-from models.dataset import DataSet
 
 
 URLSOURCE_TYPES = OrderedDict([
-    (u'single', u'Single URL'),
-    (u'chained', u'Chained'),
-    (u'dataset', u'Dataset'),
+    (u'SingleURLSource', u'Single URL'),
+    (u'ChainedURLSource', u'Chained'),
 ])
 
 
@@ -32,27 +31,29 @@ def normalize_http_url(url):
     return urlparse.urlsplit(url).geturl()
 
 
-class BaseURLSource(BaseModel):
-    kind = ndb.StringProperty(required=True, choices=URLSOURCE_TYPES.keys(),
-                              verbose_name='URL source type')
-
+class URLSource(polymodel.PolyModel):
     def num_jobs(self):
         raise NotImplementedError
 
     def get_urls(self):
         raise NotImplementedError
 
+    @property
+    def class_name(self):
+        return self.class_[-1]
+
     @staticmethod
-    def factory(urlsource_dict):
-        kind = urlsource_dict['kind']
-        class_name = "{}URLSource".format(kind.title())
-        class_obj = getattr(sys.modules[__name__], class_name)
-        instance = class_obj(kind=kind)
-        instance.populate(**urlsource_dict)
-        return instance
+    def factory(data):
+        class_obj = getattr(sys.modules[__name__], data['class_name'])
+        obj = class_obj()
+
+        values = data.copy()
+        del values['class_name']
+        obj.populate(**values)
+        return obj
 
 
-class SingleURLSource(BaseURLSource):
+class SingleURLSource(URLSource):
     url = ndb.StringProperty(required=True, validator=validate_http_url,
                              verbose_name='URL to crawl')
 
@@ -63,7 +64,7 @@ class SingleURLSource(BaseURLSource):
         return self.url
 
 
-class ChainedURLSource(BaseURLSource):
+class ChainedURLSource(URLSource):
     url = ndb.StringProperty(required=True, validator=validate_http_url,
                              verbose_name='Start URL')
     nextpage = ndb.LocalStructuredProperty(DataField, required=True)
@@ -73,8 +74,4 @@ class ChainedURLSource(BaseURLSource):
         return None
 
 
-class DatasetURLSource(BaseURLSource):
-    dataset = ndb.KeyProperty(kind=DataSet, required=True)
-    field_name = ndb.StringProperty(required=True, indexed=False)
-    only_new = ndb.BooleanProperty(required=True, default=True)
-    update_before_use = ndb.BooleanProperty(required=True, default=True)
+

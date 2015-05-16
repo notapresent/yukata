@@ -10,15 +10,15 @@ def unpack(value):
     return pickle.loads(value)
 
 
-def run_miner(url, miner):
+def enqueue_robot(url, robot):
     """
-    Add miner to task queue
+    Add robot to task queue
     """
-    taskqueue.add(url=url, payload=pack(miner))
+    taskqueue.add(url=url, payload=pack(robot))
 
 
-def run_job(url, miner, crawl, job):
+def enqueue_job(url, crawl, job):
     """
     Add job to task queue
     """
-    taskqueue.add(url=url, payload=pack((miner, crawl, job)))
+    taskqueue.add(url=url, payload=pack((crawl, job)))

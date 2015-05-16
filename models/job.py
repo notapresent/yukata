@@ -19,7 +19,7 @@ class Job(BaseModel):
     status = ndb.StringProperty()
     result = ndb.JsonProperty()
 
-    def run(self, miner, crawl):
+    def run(self, crawl):
         logging.info('Running job {} from crawl {}'.format(self, self.crawl_key))
 
         self.status = 'failure'
@@ -27,8 +27,8 @@ class Job(BaseModel):
             self.request_id = os.environ.get('REQUEST_LOG_ID')
             dldr = Downloader()
             html = dldr.html(self.url)
-            if miner.datasets:
-                self.result = miner.process_datasets(html)
+            if crawl.robot.datasets:
+                self.result = crawl.robot.process_datasets(html)
             self.status = 'success'
         finally:
             # FIXME: If no more tries - suppress exception and set status=failed

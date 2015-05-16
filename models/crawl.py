@@ -18,8 +18,8 @@ class BaseCrawl(BaseModel):
 
     def __init__(self, *args, **kwargs):
         super(BaseCrawl, self).__init__(*args, **kwargs)
-        self.miner = None
-        self.job_url = None
+        self.robot = kwargs.get('robot')
+        self.job_url = kwargs.get('job_url')
 
     @classmethod
     def _get_kind(cls):
@@ -33,13 +33,13 @@ class BaseCrawl(BaseModel):
         raise NotImplementedError("Must be implemented in subclass")
 
     @staticmethod
-    def factory(miner, job_url):
-        if miner.urlsource.kind == 'single':
-            crawl = SingleCrawl(parent=miner.key)
+    def factory(robot, job_url):
+        if robot.urlsource.class_name == 'SingleURLSource':
+            crawl = SingleCrawl(parent=robot.key)
         else:
             raise NotImplementedError
 
-        crawl.miner = miner
+        crawl.robot = robot
         crawl.job_url = job_url
         return crawl
 
@@ -53,11 +53,11 @@ class SingleCrawl(BaseCrawl):
 
     def start(self):
         logging.info('Started crawl {}'.format(self))
-        url = self.miner.urlsource.url
+        url = self.robot.urlsource.url
         job = Job(crawl_key=self.key, url=url, created_at=datetime.datetime.utcnow(),
                   seq_num=0)
         job.on_complete = self.finish
-        taskmanager.run_job(self.job_url, self.miner, self, job)
+        taskmanager.enqueue_job(self.job_url, self, job)
 
     def finish(self, status, result):
         self.finished_at = datetime.datetime.utcnow()

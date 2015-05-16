@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% import 'macros.html' as forms %}
+
+{% set pagetitle = 'Edit robot #' ~ mid if mid else 'Create robot' %}
+
+{% block title %}{{ super() }} - {{ pagetitle }}{% endblock %}
+
+{% block content %}
+    <a href="{{ uri_for('robot-index') }}">Back to robot list</a>
+
+    <h3>{{ pagetitle }}</h3>
+
+    <form action="{{ uri_for('robot-edit', mid=mid) if mid else uri_for('robot-save') }}"
+          method="POST">
+        {{ forms.form_fields(form) }}
+        <button type="submit">Save</button>
+    </form>
+
+{% if mid %}
+    <a href="{{ uri_for('robot-datasets-form', mid=mid) }}">Edit datasets</a>
+{% endif %}
+
+{% endblock %}
+{% block footer %}
+<script>
+$(function(){
+    $('ul#urlsource-class_name input[type=radio]').change(function(){
+        $('table#urlsource > tbody > tr:not(:first-child)').addClass('hidden');
+        $('table#urlsource-' + this.value)
+                .parents('table#urlsource > tbody > tr')
+                .removeClass('hidden');
+    });
+    $('ul#urlsource-class_name input:checked').triggerHandler('change');
+});
+</script>
+
+{% endblock %}

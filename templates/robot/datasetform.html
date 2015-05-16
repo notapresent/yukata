@@ -2,17 +2,17 @@
 
 {% import 'macros.html' as forms %}
 
-{% set pagetitle = 'Edit datasets for miner ' ~ form.data.name %}
+{% set pagetitle = 'Edit datasets for robot ' ~ form.data.name %}
 
 {% block title %}{{ super() }} - {{ pagetitle }}{% endblock %}
 
 {% block content %}
-    <a href="{{ uri_for('miner-index') }}">Back to miner list</a><br>
-    <a href="{{ uri_for('miner-view', mid=mid) }}">Back to miner page</a>
+    <a href="{{ uri_for('robot-index') }}">Back to robot list</a><br>
+    <a href="{{ uri_for('robot-view', mid=mid) }}">Back to robot page</a>
 
     <h3>{{ pagetitle }}</h3>
 
-    <form action="{{ uri_for('miner-datasets-save', mid=mid) }}"
+    <form action="{{ uri_for('robot-datasets-save', mid=mid) }}"
           method="POST">
         {{ forms.form_fields(form) }}
         <button type="submit">Save</button>
