@@ -24,7 +24,7 @@
 <tr>
     <th>URL source</th>
     <td>
-        <h4>{{ robot.urlsource.class_name }}</h4>
+        <h4>{{ robot.urlsource.kind }}</h4>
         {% for name, value in robot.urlsource.to_dict(exclude=['class_']).iteritems() %}
         <strong>{{ name }}</strong>: {{ value }}<br>
         {% endfor %}
@@ -77,14 +77,17 @@
     <p><em>No datasets yet</em></p>
 {% endif %}
 <button type="button" class="btn btn-primary" id="minebutton">Mine</button>
-
 <a class="btn btn-default" href="{{ uri_for('robot-edit', mid=robot.key.id()) }}">Edit</a>
 <a class="btn btn-default" href="{{ uri_for('robot-datasets-form', mid=robot.key.id()) }}">Datasets</a>
 <button id="deletebutton" type="button" class="btn btn-danger">Delete</button>
 
+<hr>
+
+<pre>{{ robot.to_dict()|pprint }}</pre>
+
 {% endblock %}
+
 {% block footer %}
-{{ super() }}
 <script>
     $("#minebutton").click(function(){
         $.getJSON('{{ uri_for("robot-run", mid=robot.key.id()) }}',{}, function(){

@@ -1,24 +1,32 @@
-import pickle
+
 from google.appengine.api import taskqueue
 
-
-def pack(value):
-    return pickle.dumps(value, pickle.HIGHEST_PROTOCOL)
-
-
-def unpack(value):
-    return pickle.loads(value)
+from models import ndb_serialize
+from models.crawler import Crawler
+from models.robot import Robot
 
 
 def enqueue_robot(url, robot):
-    """
-    Add robot to task queue
-    """
-    taskqueue.add(url=url, payload=pack(robot))
+    urlsource = robot.urlsource
+    taskqueue.add(url=url, payload=ndb_serialize.dumps(robot))
 
 
-def enqueue_job(url, crawl, job):
-    """
-    Add job to task queue
-    """
-    taskqueue.add(url=url, payload=pack((crawl, job)))
+def enqueue_scheduled_robots(schedule, url):
+    for robot in Robot.get_scheduled_robots(schedule):
+        # TODO batch add
+        taskqueue.add(url=url, payload=ndb_serialize.dumps(robot))
+
+
+def run_robot(request_body, job_url):
+    robot = ndb_serialize.loads(request_body)
+    crawler = Crawler(robot)
+    crawl = crawler.crawl
+    for job in crawler.get_jobs():
+        # TODO batch add
+        taskqueue.add(url=job_url, payload=ndb_serialize.dumps((robot, crawl, job)))
+
+
+def run_job(request_body):
+    robot, crawl, job = ndb_serialize.loads(request_body)
+    crawler = Crawler(robot=robot, crawl=crawl)
+    crawler.run_job(job)

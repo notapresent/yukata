@@ -8,7 +8,6 @@ from google.appengine.ext import ndb
 from models import BaseModel
 from models.dataset import DataSet
 from models.urlsource import URLSource
-from models.crawl import BaseCrawl
 
 
 SCHEDULES = OrderedDict([
@@ -31,7 +30,7 @@ class Robot(BaseModel):
     timeout = ndb.IntegerProperty(required=True, default=5)    # seconds
 
     # Submodels
-    # urlsource = ndb.LocalStructuredProperty(BaseURLSource)
+    # urlsource = ndb.LocalStructuredProperty(URLSource)
     urlsource = ndb.StructuredProperty(URLSource)
 
     @classmethod
@@ -44,15 +43,6 @@ class Robot(BaseModel):
         robots = cls.query(cls.schedule == schedule).fetch()
         for robot in robots:
             yield robot
-
-    def run(self, job_url):
-        """ Creates and starts a crawl
-        """
-        logging.info("Robot {} started mining".format(self.name))
-        self.urlsource = URLSource.factory(self.urlsource.to_dict())
-
-        crawl = BaseCrawl.factory(self, job_url)
-        crawl.run()
 
     @property
     def datasets(self):

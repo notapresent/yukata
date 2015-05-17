@@ -5,19 +5,17 @@ import urlparse
 from collections import OrderedDict
 
 from google.appengine.ext import ndb
-from google.appengine.ext.ndb import polymodel
 
-from models import BaseModel
 from models.datafield import DataField
 
 
 URLSOURCE_TYPES = OrderedDict([
-    (u'SingleURLSource', u'Single URL'),
-    (u'ChainedURLSource', u'Chained'),
+    ('single', 'Single URL'),
+    ('chained', 'Chained'),
 ])
 
 
-def validate_http_url(prop, url):
+def validate_http_url(_, url):
     normalized = normalize_http_url(url)
     if len(normalized) > 1500:
         raise ValueError('URL cannot exceed 1500 bytes')
@@ -31,47 +29,28 @@ def normalize_http_url(url):
     return urlparse.urlsplit(url).geturl()
 
 
-class URLSource(polymodel.PolyModel):
-    def num_jobs(self):
-        raise NotImplementedError
+class URLSource(ndb.Expando):
+    @classmethod
+    def _get_kind(cls):
+        return 'URLSource'
 
-    def get_urls(self):
-        raise NotImplementedError
+    kind = ndb.StringProperty(required=True, choices=URLSOURCE_TYPES.keys())
 
-    @property
-    def class_name(self):
-        return self.class_[-1]
-
-    @staticmethod
-    def factory(data):
-        class_obj = getattr(sys.modules[__name__], data['class_name'])
-        obj = class_obj()
-
-        values = data.copy()
-        del values['class_name']
-        obj.populate(**values)
-        return obj
+    @classmethod
+    def _post_get_hook(cls, key, future):
+        obj = future.get_result()
+        if obj is not None:
+            # test needed because post_get_hook is called even if get() fails!
+            pass
 
 
 class SingleURLSource(URLSource):
     url = ndb.StringProperty(required=True, validator=validate_http_url,
                              verbose_name='URL to crawl')
 
-    def num_jobs(self):
-        return 1
-
-    def get_urls(self):
-        return self.url
-
 
 class ChainedURLSource(URLSource):
     url = ndb.StringProperty(required=True, validator=validate_http_url,
                              verbose_name='Start URL')
-    nextpage = ndb.LocalStructuredProperty(DataField, required=True)
-    page_limit = ndb.IntegerProperty(default=1000)
-
-    def num_jobs(self):
-        return None
-
-
-
+    next_page = ndb.StructuredProperty(DataField, required=True, indexed=False)
+    page_limit = ndb.IntegerProperty(default=100)

@@ -9,7 +9,7 @@ from webapp2_extras import json
 
 import models.robot
 from models.urlsource import URLSource
-import models.taskmanager
+from models import taskmanager
 from models.dataset import DataSet
 from models.datafield import NamedDataField
 from . import forms
@@ -48,7 +48,7 @@ class RobotHandler(UserAwareHandler):
     @login_required
     def view(self, mid):
         robot = models.robot.Robot.get_by_id(int(mid), parent=self.current_user.key)
-        crawls = models.crawl.BaseCrawl.query(ancestor=robot.key).order(-models.crawl.BaseCrawl.started_at).fetch()
+        crawls = models.crawl.Crawl.query(ancestor=robot.key).order(-models.crawl.Crawl.started_at).fetch()
         self.render_response('robot/view.html', robot=robot, mid=mid, crawls=crawls,
                              schedules=models.robot.SCHEDULES)
 
@@ -155,5 +155,5 @@ class RobotHandler(UserAwareHandler):
     @login_required
     def run(self, mid):
         robot = models.robot.Robot.get_by_id(int(mid), parent=self.current_user.key)
-        models.taskmanager.enqueue_robot('/task/runrobot', robot)
+        taskmanager.enqueue_robot('/task/runrobot', robot)
         self.response.write(json.encode({'status': 'ok'}))

@@ -4,6 +4,7 @@
 def to_unicode(unicode_or_str):
     """
     Takes a str or unicode and always returns a unicode
+
     :param unicode_or_str: unicode or str
     :return: unicode
     """
@@ -17,6 +18,7 @@ def to_unicode(unicode_or_str):
 def to_str(unicode_or_str):
     """
     Takes str or unicode and always returns a str
+
     :param unicode_or_str: unicode or str
     :return: unicode
     """
