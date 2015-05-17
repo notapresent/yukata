@@ -1,0 +1,9 @@
+a.googlelogin {
+    display: block;
+    width: 294px; height: 60px;
+    background-image: url("/static/images/Red-signin_Long_base_20dp.png");
+}
+
+a.googlelogin:hover {
+    background-image: url("/static/images/Red-signin_Long_hover_20dp.png");
+}
