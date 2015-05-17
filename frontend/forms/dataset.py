@@ -10,4 +10,3 @@ class DataSetForm(model_form(DataSet)):
     dsid = HiddenField()
     delete = BooleanField()
     fields = FieldList(FormField(NamedDataFieldForm))
-

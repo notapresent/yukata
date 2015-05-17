@@ -12,4 +12,3 @@ class DataFieldForm(model_form(DataField)):
 
 class NamedDataFieldForm(DataFieldForm):
     name = StringField('Field name')
-

@@ -148,4 +148,3 @@ class RobotHandler(basehandlers.UserHandler):
         robot = Robot.get_by_id(int(mid), parent=self.current_user.key)
         taskmanager.enqueue_robot('/task/runrobot', robot)
         self.response.write(json.encode({'status': 'ok'}))
-

@@ -52,5 +52,6 @@ class DataField(ndb.Model):
 
         return results[0] if len(results) == 1 else results
 
+
 class NamedDataField(DataField):
     name = ndb.StringProperty()

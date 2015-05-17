@@ -41,8 +41,6 @@ class Crawler(object):
         #     logging.info('Finished job {} from crawl {}'.format(self, self.crawl_key))
         #     self.crawl_key.get().finish(self.status, self.result)
 
-
-
     @property
     def crawl(self):
         if not self._crawl:
