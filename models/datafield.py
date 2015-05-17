@@ -8,9 +8,9 @@ from lxml import etree, cssselect
 
 
 SELECTOR_TYPES = OrderedDict([
-    (u'css', u'CSS'),
     (u'xpath', u'XPath'),
-    (u'rx', u'RegExp')
+    # (u'css', u'CSS'),
+    # (u'rx', u'RegExp')
 ])
 
 

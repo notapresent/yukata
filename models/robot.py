@@ -1,6 +1,4 @@
 from __future__ import absolute_import
-import logging
-import datetime
 from collections import OrderedDict
 
 from google.appengine.ext import ndb
@@ -56,17 +54,7 @@ class Robot(BaseModel):
     def datasets(self, value):
         self._datasets = value
 
-
-    def process_datasets(self, html):
-        result = dict()
-        for ds in self.datasets:
-            result[ds.name] = ds.process(html)
-        return result
-
-    def dictify(self):
-        """
-        Returns all data necessary to run robot
-        """
-        dictified = self.to_dict(exclude=['created_at', 'name', 'schedule'])
-        dictified['id'] = self.key.id()
-        return dictified
+    @classmethod
+    def _post_get_hook(cls, key, future):
+        obj = future.get_result()
+        obj.urlsource = URLSource.factory(obj.urlsource.to_dict())

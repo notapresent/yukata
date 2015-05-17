@@ -82,6 +82,7 @@ class RobotHandler(UserAwareHandler):
             robot.schedule = form.data['schedule']
             robot.rps = form.data['rps']
             robot.timeout = form.data['timeout']
+
             robot.urlsource = URLSource.factory(form.urlsource.form.data)
             key = robot.put()
             return self.redirect_to('robot-view', mid=key.id())

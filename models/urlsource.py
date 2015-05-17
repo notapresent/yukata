@@ -36,6 +36,13 @@ class URLSource(ndb.Expando):
     def _get_kind(cls):
         return 'URLSource'
 
+    @classmethod
+    def factory(cls, params):
+        class_name = "{}URLSource".format(params['kind'].title())
+        class_obj = getattr(sys.modules[__name__], class_name)
+        obj = class_obj(**params)
+        return obj
+
 
 class SingleURLSource(URLSource):
     url = ndb.StringProperty(required=True, validator=validate_http_url,
