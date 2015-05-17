@@ -1,14 +1,9 @@
 import unittest
 
-from google.appengine.api import memcache
 from google.appengine.ext import testbed
-
 import webapp2
-from mock import patch, MagicMock
 
-from models.robot import SCHEDULES
 import backend
-from backend.handlers import TaskHandler, CronHandler
 
 
 class CronHandlerTestCase(unittest.TestCase):

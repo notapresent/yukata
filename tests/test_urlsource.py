@@ -1,11 +1,6 @@
-import unittest
-from google.appengine.api import memcache
-from google.appengine.ext import ndb
-from google.appengine.ext import testbed
-
 from . import GAETestCase
 
-from models.urlsource import URLSource, SingleURLSource
+from models.urlsource import SingleURLSource
 
 
 class URLSourceTestCase(GAETestCase):

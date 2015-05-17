@@ -1,4 +1,3 @@
-
 from google.appengine.api import taskqueue
 
 from models import ndb_serialize

@@ -1,9 +1,7 @@
 from __future__ import absolute_import
-import urlparse
 from collections import OrderedDict
 
 from google.appengine.ext import ndb
-
 from lxml import etree, cssselect
 
 

@@ -16,7 +16,6 @@ from . import basehandlers
 from . import forms
 
 
-
 class MainHandler(basehandlers.BaseHandler):
     def home(self):
         self.render_response('welcome.html')

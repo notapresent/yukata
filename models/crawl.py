@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 from google.appengine.ext import ndb
+
 from models.job import Job
 
 

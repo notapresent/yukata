@@ -2,8 +2,10 @@
 from __future__ import absolute_import
 
 import os
+
 import webapp2
 from webapp2_extras.routes import PathPrefixRoute
+
 
 DEBUG = os.environ.get('SERVER_SOFTWARE', '').startswith('Dev')
 

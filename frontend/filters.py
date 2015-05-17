@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import urllib
+
 from markupsafe import Markup
 
 
