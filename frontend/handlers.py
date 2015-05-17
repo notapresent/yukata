@@ -66,7 +66,7 @@ class RobotHandler(UserAwareHandler):
             robot = models.robot.Robot()
 
         form = forms.RobotForm(data=robot.to_dict())
-        self.render_response('robot/form.html', form=form, mid=mid)
+        self.render_response('robot/form.html', form=form, mid=mid, robot=robot)
 
     def process_form(self, mid=None):
         if mid:
@@ -87,8 +87,7 @@ class RobotHandler(UserAwareHandler):
             key = robot.put()
             return self.redirect_to('robot-view', mid=key.id())
 
-        self.render_response('robot/form.html', form=form, mid=mid,
-                             po=self.request.POST)
+        self.render_response('robot/form.html', form=form, mid=mid, robot=robot)
 
     @login_required
     def show_datasets_form(self, mid):

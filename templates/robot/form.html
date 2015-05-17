@@ -2,7 +2,7 @@
 
 {% import 'macros.html' as forms %}
 
-{% set pagetitle = 'Edit robot #' ~ mid if mid else 'Create robot' %}
+{% set pagetitle = 'Edit robot ' ~ robot.name if mid else 'Create robot' %}
 
 {% block title %}{{ super() }} - {{ pagetitle }}{% endblock %}
 
@@ -14,7 +14,8 @@
     <form action="{{ uri_for('robot-edit', mid=mid) if mid else uri_for('robot-save') }}"
           method="POST">
         {{ forms.form_fields(form) }}
-        <button type="submit">Save</button>
+        <button class="btn btn-primary" type="submit">Save</button>
+        <a class="btn btn-default" href="{{ uri_for('robot-view', mid=mid) }}">Cancel</a>
     </form>
 
 {% if mid %}
@@ -25,13 +26,14 @@
 {% block footer %}
 <script>
 $(function(){
-    $('ul#urlsource-class_name input[type=radio]').change(function(){
+    $('ul#urlsource-kind input[type=radio]').change(function(){
         $('table#urlsource > tbody > tr:not(:first-child)').addClass('hidden');
         $('table#urlsource-' + this.value)
                 .parents('table#urlsource > tbody > tr')
                 .removeClass('hidden');
+        console.log(this.value);
     });
-    $('ul#urlsource-class_name input:checked').triggerHandler('change');
+    $('ul#urlsource-kind input:checked').triggerHandler('change');
 });
 </script>
 
