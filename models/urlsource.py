@@ -30,18 +30,11 @@ def normalize_http_url(url):
 
 
 class URLSource(ndb.Expando):
-    @classmethod
-    def _get_kind(cls):
-        return 'URLSource'
-
     kind = ndb.StringProperty(required=True, choices=URLSOURCE_TYPES.keys())
 
     @classmethod
-    def _post_get_hook(cls, key, future):
-        obj = future.get_result()
-        if obj is not None:
-            # test needed because post_get_hook is called even if get() fails!
-            pass
+    def _get_kind(cls):
+        return 'URLSource'
 
 
 class SingleURLSource(URLSource):
