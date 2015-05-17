@@ -15,7 +15,8 @@
           method="POST">
         {{ forms.form_fields(form) }}
         <button class="btn btn-primary" type="submit">Save</button>
-        <a class="btn btn-default" href="{{ uri_for('robot-view', mid=mid) }}">Cancel</a>
+        <a href="{{ uri_for('robot-view', mid=mid) if mid else uri_for('robot-index') }}"
+                class="btn btn-default">Cancel</a>
     </form>
 
 {% if mid %}

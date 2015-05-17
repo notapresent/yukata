@@ -3,7 +3,6 @@ from collections import OrderedDict
 
 from google.appengine.ext import ndb
 
-from models import BaseModel
 from models.dataset import DataSet
 from models.urlsource import URLSource
 
@@ -17,7 +16,7 @@ SCHEDULES = OrderedDict([
 ])
 
 
-class Robot(BaseModel):
+class Robot(ndb.Model):
     created_at = ndb.DateTimeProperty(auto_now_add=True, indexed=False)
     name = ndb.StringProperty(required=False)
     schedule = ndb.StringProperty(choices=SCHEDULES.keys(),
@@ -29,7 +28,7 @@ class Robot(BaseModel):
 
     # Submodels
     # urlsource = ndb.LocalStructuredProperty(URLSource)
-    urlsource = ndb.StructuredProperty(URLSource)
+    urlsource = ndb.StructuredProperty(URLSource, indexed=False)
 
     @classmethod
     def list(cls, ancestor=None):

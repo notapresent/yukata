@@ -3,30 +3,29 @@ from __future__ import absolute_import
 import os
 from pprint import pformat
 
-from webapp2_extras.appengine.users import login_required, admin_required
-from .basehandlers import UserHandler
 from webapp2_extras import json
 
-import models.robot
-from models.urlsource import URLSource
 from models import taskmanager
+from models.crawl import Crawl
 from models.dataset import DataSet
+from models.robot import Robot, SCHEDULES
+from models.urlsource import URLSource
 from models.datafield import NamedDataField
+from models.job import Job
+from . import basehandlers
 from . import forms
-from .basehandlers import BaseHandler, UserHandler, AdminHandler
 
 
-class MainHandler(BaseHandler):
+
+class MainHandler(basehandlers.BaseHandler):
     def home(self):
         self.render_response('welcome.html')
 
 
-class AdminHandler(AdminHandler):
-    @admin_required
+class AdminHandler(basehandlers.AdminHandler):
     def index(self):
         self.render_response('admin/index.html')
 
-    @admin_required
     def env(self):
         ctx = {
             'os.environ': pformat(os.environ),
@@ -37,42 +36,39 @@ class AdminHandler(AdminHandler):
         self.response.write("<pre>{}</pre>".format(html))
 
 
-class RobotHandler(UserHandler):
-    @login_required
+class RobotHandler(basehandlers.UserHandler):
     def index(self):
         template_vars = {
-            'robots': models.robot.Robot.list(ancestor=self.current_user.key),
-            'schedules': models.robot.SCHEDULES
+            'robots': Robot.list(ancestor=self.current_user.key),
+            'schedules': SCHEDULES
         }
         self.render_response('robot/index.html', **template_vars)
 
-    @login_required
     def view(self, mid):
-        robot = models.robot.Robot.get_by_id(int(mid), parent=self.current_user.key)
-        crawls = models.crawl.Crawl.query(ancestor=robot.key).order(-models.crawl.Crawl.started_at).fetch()
+        robot = Robot.get_by_id(int(mid), parent=self.current_user.key)
+        crawls = Crawl.query(ancestor=robot.key).order(-Crawl.started_at).fetch()
         self.render_response('robot/view.html', robot=robot, mid=mid, crawls=crawls,
-                             schedules=models.robot.SCHEDULES)
+                             schedules=SCHEDULES)
 
     def delete(self, mid):
-        robot = models.robot.Robot.get_by_id(int(mid), parent=self.current_user.key)
+        robot = Robot.get_by_id(int(mid), parent=self.current_user.key)
         robot.key.delete()
         return self.redirect_to('robot-index')
 
-    @login_required
     def show_form(self, mid=None):
         if mid:
-            robot = models.robot.Robot.get_by_id(int(mid), parent=self.current_user.key)
+            robot = Robot.get_by_id(int(mid), parent=self.current_user.key)
         else:
-            robot = models.robot.Robot()
+            robot = Robot()
 
         form = forms.RobotForm(data=robot.to_dict())
         self.render_response('robot/form.html', form=form, mid=mid, robot=robot)
 
     def process_form(self, mid=None):
         if mid:
-            robot = models.robot.Robot.get_by_id(int(mid), parent=self.current_user.key)
+            robot = Robot.get_by_id(int(mid), parent=self.current_user.key)
         else:
-            robot = models.robot.Robot(parent=self.current_user.key)
+            robot = Robot(parent=self.current_user.key)
 
         form = forms.RobotForm(self.request.POST, obj=robot)
 
@@ -89,9 +85,8 @@ class RobotHandler(UserHandler):
 
         self.render_response('robot/form.html', form=form, mid=mid, robot=robot)
 
-    @login_required
     def show_datasets_form(self, mid):
-        robot = models.robot.Robot.get_by_id(int(mid), parent=self.current_user.key)
+        robot = Robot.get_by_id(int(mid), parent=self.current_user.key)
         datasets = robot.datasets
 
         new_field_template = NamedDataField()
@@ -108,7 +103,7 @@ class RobotHandler(UserHandler):
                              po=self.request.POST, fo=form.data)
 
     def process_datasets_form(self, mid):
-        robot = models.robot.Robot.get_by_id(int(mid), parent=self.current_user.key)
+        robot = Robot.get_by_id(int(mid), parent=self.current_user.key)
         form = forms.DataSetsForm(self.request.POST)
 
         if form.validate():
@@ -138,23 +133,20 @@ class RobotHandler(UserHandler):
         self.render_response('robot/datasetform.html', form=form, mid=mid,
                              po=self.request.POST, fo=form.data)
 
-    @login_required
     def view_job(self, jid):
-        job = models.job.Job.get_by_id(int(jid))
+        job = Job.get_by_id(int(jid))
         crawl = job.crawl_key.get()
         robot = crawl.key.parent().get()
         self.render_response('robot/job.html', job=job, crawl=crawl, robot=robot)
 
-    @login_required
     def view_crawl(self, mid, cid):
-        robot = models.robot.Robot.get_by_id(int(mid), parent=self.current_user.key)
-        crawl = models.crawl.BaseCrawl.get_by_id(int(cid), parent=robot.key)
+        robot = Robot.get_by_id(int(mid), parent=self.current_user.key)
+        crawl = Crawl.get_by_id(int(cid), parent=robot.key)
         jobs = crawl.jobs
         self.render_response('robot/crawl.html', robot=robot, crawl=crawl, jobs=jobs)
 
-    @login_required
     def run(self, mid):
-        robot = models.robot.Robot.get_by_id(int(mid), parent=self.current_user.key)
+        robot = Robot.get_by_id(int(mid), parent=self.current_user.key)
         taskmanager.enqueue_robot('/task/runrobot', robot)
         self.response.write(json.encode({'status': 'ok'}))
 
