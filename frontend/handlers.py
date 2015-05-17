@@ -4,7 +4,7 @@ import os
 from pprint import pformat
 
 from webapp2_extras.appengine.users import login_required, admin_required
-from .basehandlers import UserAwareHandler
+from .basehandlers import UserHandler
 from webapp2_extras import json
 
 import models.robot
@@ -13,14 +13,15 @@ from models import taskmanager
 from models.dataset import DataSet
 from models.datafield import NamedDataField
 from . import forms
+from .basehandlers import BaseHandler, UserHandler, AdminHandler
 
 
-class MainHandler(UserAwareHandler):
+class MainHandler(BaseHandler):
     def home(self):
         self.render_response('welcome.html')
 
 
-class AdminHandler(UserAwareHandler):
+class AdminHandler(AdminHandler):
     @admin_required
     def index(self):
         self.render_response('admin/index.html')
@@ -36,7 +37,7 @@ class AdminHandler(UserAwareHandler):
         self.response.write("<pre>{}</pre>".format(html))
 
 
-class RobotHandler(UserAwareHandler):
+class RobotHandler(UserHandler):
     @login_required
     def index(self):
         template_vars = {
@@ -53,7 +54,6 @@ class RobotHandler(UserAwareHandler):
                              schedules=models.robot.SCHEDULES)
 
     def delete(self, mid):
-        self.check_login()
         robot = models.robot.Robot.get_by_id(int(mid), parent=self.current_user.key)
         robot.key.delete()
         return self.redirect_to('robot-index')
