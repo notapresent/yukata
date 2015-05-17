@@ -29,7 +29,7 @@ class Crawler(object):
         job.request_id = request_id
         # self.status = 'failure'
         # try:
-        #     self.request_id = os.environ.get('REQUEST_LOG_ID')
+        # self.request_id = os.environ.get('REQUEST_LOG_ID')
         #     dldr = Downloader()
         #     html = dldr.html(self.url)
         #     if crawl.robot.datasets:
@@ -48,27 +48,27 @@ class Crawler(object):
             self._crawl.put()
         return self._crawl
 
-# class SingleCrawl(BaseCrawl):
-#     def run(self):
-#         self.started_at = datetime.datetime.utcnow()
-#         self.num_jobs = 1
-#         self.put()
-#         self.start()
-#
-#     def start(self):
-#         logging.info('Started crawl {}'.format(self))
-#         url = self.robot.urlsource.url
-#         job = Job(crawl_key=self.key, url=url, created_at=datetime.datetime.utcnow(),
-#                   seq_num=0)
-#         job.on_complete = self.finish
-#         taskmanager.enqueue_job(self.job_url, self, job)
-#
-#     def finish(self, status, result):
-#         self.finished_at = datetime.datetime.utcnow()
-#         self.status = status
-#         self.result = result
-#         self.put()
-#         logging.info('Finished crawl {}'.format(self))
+    # class SingleCrawl(BaseCrawl):
+    # def run(self):
+    #         self.started_at = datetime.datetime.utcnow()
+    #         self.num_jobs = 1
+    #         self.put()
+    #         self.start()
+    #
+    #     def start(self):
+    #         logging.info('Started crawl {}'.format(self))
+    #         url = self.robot.urlsource.url
+    #         job = Job(crawl_key=self.key, url=url, created_at=datetime.datetime.utcnow(),
+    #                   seq_num=0)
+    #         job.on_complete = self.finish
+    #         taskmanager.enqueue_job(self.job_url, self, job)
+    #
+    #     def finish(self, status, result):
+    #         self.finished_at = datetime.datetime.utcnow()
+    #         self.status = status
+    #         self.result = result
+    #         self.put()
+    #         logging.info('Finished crawl {}'.format(self))
 
     # def run(self, job_url):
     #     """ Creates and starts a crawl

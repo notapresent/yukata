@@ -70,5 +70,4 @@ routes = [
     ]),
 ]
 
-
 application = webapp2.WSGIApplication(routes, debug=DEBUG, config=config)

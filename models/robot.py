@@ -24,7 +24,7 @@ class Robot(ndb.Model):
                                   default=SCHEDULES.items()[0][0])
     # Download settings
     rps = ndb.FloatProperty(required=True, default=0.2)  # requests per second
-    timeout = ndb.IntegerProperty(required=True, default=5)    # seconds
+    timeout = ndb.IntegerProperty(required=True, default=5)  # seconds
 
     # Submodels
     # urlsource = ndb.LocalStructuredProperty(URLSource)

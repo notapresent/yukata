@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from wtforms import (SelectField, FormField)
+from wtforms import SelectField, FormField
 from wtforms_appengine.ndb import model_form
 
 from models.robot import Robot, SCHEDULES

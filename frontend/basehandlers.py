@@ -10,6 +10,7 @@ class BaseHandler(webapp2.RequestHandler):
     """
         All other handlers will extend this handler
     """
+
     def __init__(self, request, response):
         self.initialize(request, response)
         self.is_admin = users.is_current_user_admin()

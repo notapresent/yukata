@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from wtforms import (StringField)
+from wtforms import StringField
 from wtforms_appengine.ndb import model_form
 
 from models.datafield import DataField
