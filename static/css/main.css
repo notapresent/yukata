@@ -1,9 +1,11 @@
-a.googlelogin {
-    display: block;
-    width: 294px; height: 60px;
-    background-image: url("/static/images/Red-signin_Long_base_20dp.png");
-}
+body { padding-top: 70px; }
+a.navbar-brand { font-weight: bold; }
 
-a.googlelogin:hover {
-    background-image: url("/static/images/Red-signin_Long_hover_20dp.png");
+a.google_signin {
+    width: 394px;
+    height: 84px;
+    background-image: url('/static/images/Red-signin_Long_base_32dp.png');
+    display: inline-block;
 }
+a.google_signin:hover { background-image: url('/static/images/Red-signin_Long_hover_32dp.png');}
+a.google_signin:active { background-image: url('/static/images/Red-signin_Long_press_32dp.png'); }

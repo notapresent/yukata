@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    {% block head %}
-    <meta charset="utf-8">
-    <link rel="icon" href="/favicon.ico">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{% block title %}Robots{% endblock %}</title>
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="icon" href="/favicon.ico">
 
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <link href="/static/css/main.css" rel="stylesheet">
-    {% endblock %}
-  </head>
+        <title>{% block title %}浴衣{% endblock %}</title>
 
-  <body role="document">
-    <div class="container">
-      {% include 'navbar.html' %}
-        <div id="content">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+        <link href="/static/css/main.css" rel="stylesheet">
+    </head>
+
+    <body>
+        {% include 'navbar.html' %}
+        <div class="container">
             {% block content %}{% endblock %}
-        </div>
-    </div> <!-- /container -->
+        </div><!-- /.container -->
 
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-
-    {% block footer %}{% endblock %}
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        {% block footer %}{% endblock %}
   </body>
 </html>

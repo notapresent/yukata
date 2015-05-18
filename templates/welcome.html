@@ -3,12 +3,16 @@
 {% block title %}{{ super() }} - Welcome{% endblock %}
 
 {% block content %}
-
-    {% if user %}
-        <a href="{{ uri_for('robot-index') }}">Robot list</a>
-<p>TODO: Dashboard</p>
-    {% else %}
-        <h3>Sign in with Google to continue</h3>
-    {% endif %}
-
+      <div class="row">
+        {% if user %}
+            <a href="{{ uri_for('robot-index') }}">Robot list</a>
+            <p>TODO: Dashboard</p>
+        {% else %}
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <a class="google_signin" href="{{ login_url }}"></a>
+            </div>
+            <div class="col-md-4"></div>
+        {% endif %}
+      </div>
 {% endblock %}

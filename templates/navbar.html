@@ -1,15 +1,35 @@
-<div id="navbar">
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ uri_for('home') }}">浴衣</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
 
-    <div id="usermenu">
+      <ul class="nav navbar-nav navbar-right">
+
         {% if user %}
-            {{ user.nickname() }}
-            {% if is_admin %}(<a href="{{ uri_for('admin-index') }}">admin</a>){% endif %}
-            | <a href="{{ logout_url }}">logout</a>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"
+                 role="button" aria-expanded="false">{{ user.nickname() }} <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                {% if is_admin %}
+                  <li><a href="{{ uri_for('admin-index') }}">Admin</a></li>
+                {% endif %}
+
+                  <li><a href="{{ logout_url }}">Log out</a></li>
+              </ul>
+            </li>
         {% else %}
-            <a class="googlelogin" href="{{ login_url }}"></a>
+          <a href="{{ login_url }}" class="btn btn-default navbar-btn">Sign in with Google</a>
         {% endif %}
-    </div>
+      </ul>
 
-    <h1><a href="{{ uri_for('home') }}">Home</a></h1>
-
-</div>
+        </div><!--/.nav-collapse -->
+    </div><!-- /container -->
+</nav>
