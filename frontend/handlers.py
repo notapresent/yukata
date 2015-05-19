@@ -46,8 +46,9 @@ class RobotHandler(basehandlers.UserHandler):
     def view(self, mid):
         robot = Robot.get_by_id(int(mid), parent=self.current_user.key)
         crawls = Crawl.query(ancestor=robot.key).order(-Crawl.started_at).fetch()
+        datasets = DataSet.query(ancestor=robot.key).fetch()
         self.render_response('robot/view.html', robot=robot, mid=mid, crawls=crawls,
-                             schedules=SCHEDULES)
+                             datasets=datasets, schedules=SCHEDULES)
 
     def delete(self, mid):
         robot = Robot.get_by_id(int(mid), parent=self.current_user.key)
@@ -84,54 +85,6 @@ class RobotHandler(basehandlers.UserHandler):
 
         self.render_response('robot/form.html', form=form, mid=mid, robot=robot)
 
-    def show_datasets_form(self, mid):
-        robot = Robot.get_by_id(int(mid), parent=self.current_user.key)
-        datasets = robot.datasets
-
-        new_field_template = NamedDataField()
-
-        datasets.append({'name': '', 'fields': []})
-        for ds in robot.datasets:
-            if isinstance(ds, DataSet):
-                ds.dsid = ds.key.id()
-                ds.fields.append(new_field_template)
-            else:
-                ds['fields'].append(new_field_template.to_dict())
-        form = forms.DataSetsForm(datasets=datasets)
-        self.render_response('robot/datasetform.html', form=form, mid=mid,
-                             po=self.request.POST, fo=form.data)
-
-    def process_datasets_form(self, mid):
-        robot = Robot.get_by_id(int(mid), parent=self.current_user.key)
-        form = forms.DataSetsForm(self.request.POST)
-
-        if form.validate():
-            for ds in form.data['datasets']:
-                if not ds['name']:
-                    continue
-
-                if ds['dsid']:
-                    dataset = DataSet.get_by_id(int(ds['dsid']), parent=robot.key)
-                    if ds['delete']:
-                        dataset.key.delete()
-                        continue
-
-                    dataset.fields = []
-                else:
-                    dataset = DataSet(name=ds['name'], parent=robot.key)
-                    dataset.fields = []
-
-                for f in ds['fields']:
-                    if f['name']:
-                        field = NamedDataField(**f)
-                        dataset.fields.append(field)
-                dataset.put()
-
-            return self.redirect_to('robot-view', mid=mid)
-
-        self.render_response('robot/datasetform.html', form=form, mid=mid,
-                             po=self.request.POST, fo=form.data)
-
     def view_job(self, jid):
         job = Job.get_by_id(int(jid))
         crawl = job.crawl_key.get()
@@ -148,3 +101,39 @@ class RobotHandler(basehandlers.UserHandler):
         robot = Robot.get_by_id(int(mid), parent=self.current_user.key)
         taskmanager.enqueue_robot('/task/runrobot', robot)
         self.response.write(json.encode({'status': 'ok'}))
+
+
+class DataSetHandler(basehandlers.UserHandler):
+    def show_form(self, mid, dsid):
+        robot = Robot.get_by_id(int(mid), parent=self.current_user.key)
+        if dsid:
+            dataset = DataSet.get_by_id(int(dsid), parent=robot.key)
+        else:
+            dataset = DataSet(parent=robot.key)
+
+        form = forms.DataSetForm(data=dataset.to_dict())
+        self.render_response('robot/datasetform.html', form=form, mid=mid, dsid=dsid,
+                             dataset=dataset)
+
+    def process_form(self, mid, dsid):
+        robot = Robot.get_by_id(int(mid), parent=self.current_user.key)
+        if dsid:
+            dataset = DataSet.get_by_id(int(dsid), parent=robot.key)
+        else:
+            dataset = DataSet(parent=robot.key)
+
+        form = forms.DataSetForm(self.request.POST)
+        if form.validate():
+            dataset.populate(**form.data)
+
+            key = dataset.put()
+            return self.redirect_to('dataset-edit', mid=mid, dsid=key.id())
+
+        self.render_response('robot/datasetform.html', form=form, mid=mid, dsid=dsid,
+                             dataset=dataset)
+
+    def delete(self, mid, dsid):
+        robot = Robot.get_by_id(int(mid), parent=self.current_user.key)
+        dataset = DataSet.get_by_id(int(dsid), parent=robot.key)
+        dataset.key.delete()
+        return self.redirect_to('robot-view', mid=mid)

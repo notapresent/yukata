@@ -2,35 +2,97 @@
 
 {% import 'macros.html' as forms %}
 
-{% set pagetitle = 'Edit datasets for robot ' ~ form.data.name %}
+{% set pagetitle = 'Edit dataset ' ~ dataset.name if dsid else 'Add dataset' %}
 
 {% block title %}{{ super() }} - {{ pagetitle }}{% endblock %}
 
+{% block header %}
+{{ super() }}
+<style>
+    label[for="datafield_template"], div#datafield_template-div {
+        display: none;
+    }
+
+</style>
+{% endblock %}
+
 {% block content %}
-    <a href="{{ uri_for('robot-index') }}">Back to robot list</a><br>
-    <a href="{{ uri_for('robot-view', mid=mid) }}">Back to robot page</a>
+<div class="row">
+    <div class="col-lg-12">
 
-    <h3>{{ pagetitle }}</h3>
+        <h1>{{ pagetitle }}</h1>
 
-    <form action="{{ uri_for('robot-datasets-save', mid=mid) }}"
-          method="POST">
-        {{ forms.form_fields(form) }}
-        <button type="submit">Save</button>
-    </form>
+        <form action="{{ uri_for('dataset-edit', mid=mid, dsid=dsid) if dsid else uri_for('dataset-save', mid=mid) }}" method="POST">
 
-<pre>{{ po|pprint }}</pre>
-<pre>{{ fo|pprint }}</pre>
+            {{ forms.form_fields(form) }}
+            <hr>
+            <button type="button" class="btn btn-primary" id="add-field">Add field</button>
+            <div class="pull-right">
+                {% if dsid %}
+                    <a class="btn btn-danger" href="#" id="delete-dataset">Delete</a>
+                {% endif %}
+                <a href="{{ uri_for('robot-view', mid=mid) }}#datasets" class="btn btn-default">Cancel</a>
+                <button class="btn btn-primary" type="submit">Save</button>
+            </div>
+        </form>
 
-
-
+    </div><!-- col-lg-12 -->
+</div><!-- /row -->
 {% endblock %}
 {% block footer %}
 <script>
 $(function(){
-    $('ul#datasets input:checkbox').change(function() {
-        $(this).parents('table').find('tr:nth-child(3)').toggle();
+
+    $('<button type="button" class="btn btn-danger delete-field">Delete field</button>').appendTo('ul#datafields li');
+    $('button.delete-field').on('click', function(){
+       var field_container = $(this).closest('li');
+        field_container.find('input').attr('value','');
+        field_container.hide();
     });
+    $('#add-field').click(function() {
+        var attr_names = ['id', 'name', 'for'];
+        var next_filed_num = 0;
+        var tmpl = $('ul#datafields>li').first().clone(true);
+        $('ul#datafields > li > table').each(function(index) {
+            var fieldnum = parseInt($(this).attr('id').slice(11));
+            if(fieldnum > next_filed_num) { next_filed_num = fieldnum; }
+        });
+        next_filed_num = (++next_filed_num).toString();
+
+        $(tmpl).find('*').each(function(index){
+            var elem = $(this);
+            attr_names.forEach(function(attr_name, index, arr){
+                var attr = elem.attr(attr_name);
+                if(attr) {
+                   elem.attr(attr_name, attr.replace('datafields-0','datafields-' + next_filed_num));
+                }
+            });
+
+            if(elem.attr('value') && elem.prop("tagName").toLowerCase() == 'input') {
+                elem.attr('value','');
+            }
+        });
+        // Set first selector type
+        $(tmpl).find('select').val($(tmpl).find('select option:first').val());
+        $('ul#datafields').append(tmpl);
+    });
+
+    /* {% if dsid %} */
+        $("#delete-dataset").click(function () {
+            if (confirm('Sure?')) {
+                $.ajax({
+                    type: "POST",
+                    url: "{{ uri_for('dataset-delete', mid=mid, dsid=dsid) }}",
+                    async: false
+                });
+                window.location.replace("{{ uri_for('robot-view', mid=mid) }}#datasets");
+            } else {
+                return false;
+            }
+        });
+    /* {% endif %} */
 });
 </script>
 
 {% endblock %}
+

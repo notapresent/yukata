@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from wtforms import StringField
+from wtforms import StringField, SelectField
 from wtforms_appengine.ndb import model_form
 
-from models.datafield import DataField
+from models.datafield import DataField, SELECTOR_TYPES
 
 
 class DataFieldForm(model_form(DataField)):
-    pass
+    selector_type = SelectField('Schedule', choices=SELECTOR_TYPES.items(),
+                                default=SELECTOR_TYPES.items()[0][0])
 
 
 class NamedDataFieldForm(DataFieldForm):

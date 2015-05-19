@@ -7,22 +7,19 @@
 {% block title %}{{ super() }} - {{ pagetitle }}{% endblock %}
 
 {% block content %}
-    <a href="{{ uri_for('robot-index') }}">Back to robot list</a>
+<div class="row">
+    <div class="col-lg-12">
+        <h1>{{ pagetitle }}</h1>
 
-    <h3>{{ pagetitle }}</h3>
-
-    <form action="{{ uri_for('robot-edit', mid=mid) if mid else uri_for('robot-save') }}"
-          method="POST">
-        {{ forms.form_fields(form) }}
-        <button class="btn btn-primary" type="submit">Save</button>
-        <a href="{{ uri_for('robot-view', mid=mid) if mid else uri_for('robot-index') }}"
-                class="btn btn-default">Cancel</a>
-    </form>
-
-{% if mid %}
-    <a href="{{ uri_for('robot-datasets-form', mid=mid) }}">Edit datasets</a>
-{% endif %}
-
+        <form action="{{ uri_for('robot-edit', mid=mid) if mid else uri_for('robot-save') }}"
+              method="POST">
+            {{ forms.form_fields(form) }}
+            <button class="btn btn-primary" type="submit">Save</button>
+            <a href="{{ uri_for('robot-view', mid=mid) if mid else uri_for('robot-index') }}"
+                    class="btn btn-default">Cancel</a>
+        </form>
+    </div><!-- col-lg-12 -->
+</div><!-- /row -->
 {% endblock %}
 {% block footer %}
 <script>

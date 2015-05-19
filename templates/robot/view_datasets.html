@@ -1,0 +1,39 @@
+<div role="tabpanel" class="tab-pane" id="datasets">
+
+    {% if datasets %}
+
+        {% for ds in datasets %}
+            <h2>{{ ds.name }}</h2>
+
+            <table class="table table-bordered">
+                <tr>
+                    <th>Name</th>
+                    <th>Selector</th>
+                    <th>Type</th>
+                    <th>Rx</th>
+                </tr>
+                {% for f in ds.datafields %}
+                    <tr>
+                        <td>{{ f.name }}</td>
+                        <td>{{ f.selector }}</td>
+                        <td>{{ f.selector_type }}</td>
+                        <td>{{ f.rx }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <div class="pull-right">
+                <a class="btn btn-default"
+                    href="{{ uri_for('dataset-edit', mid=mid, dsid=ds.key.id()) }}">Edit</a>
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+    <p><em>This robot has no datasets</em></p>
+    {% endif %}
+    <p>
+        <a class="btn btn-primary"
+           href="{{ uri_for('dataset-create', mid=robot.key.id()) }}">Add Dataset</a>
+    </p>
+
+</div>

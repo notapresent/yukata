@@ -9,10 +9,4 @@ class DataSet(ndb.Model):
     """ Collection of NamedDataField objects
     """
     name = ndb.StringProperty(indexed=False)
-    fields = ndb.LocalStructuredProperty(NamedDataField, repeated=True)
-
-    def process(self, html):
-        results = {}
-        for field in self.fields:
-            results[field.name] = field.process(html)
-        return results
+    datafields = ndb.LocalStructuredProperty(NamedDataField, repeated=True)

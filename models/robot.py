@@ -21,7 +21,7 @@ class Robot(ndb.Model):
     name = ndb.StringProperty(required=False)
     schedule = ndb.StringProperty(choices=SCHEDULES.keys(),
                                   required=True,
-                                  default=SCHEDULES.items()[0][0])
+                                  default=SCHEDULES.keys()[0])
     # Download settings
     rps = ndb.FloatProperty(required=True, default=0.2)  # requests per second
     timeout = ndb.IntegerProperty(required=True, default=5)  # seconds

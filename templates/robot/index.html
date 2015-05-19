@@ -3,23 +3,27 @@
 {% block title %}{{ super() }} - Robot list{% endblock %}
 
 {% block content %}
-    <h3>Robots</h3>
+<div class="row">
+    <div class="col-lg-12">
+        <a href="{{ uri_for('robot-create') }}" class="btn btn-primary pull-right">Add robot</a>
+        <h1>Robots</h1>
 
-    <a href="{{ uri_for('robot-create') }}" class="btn btn-primary">Add robot</a>
+        <table class="table">
+            <tr>
+                <th>Name</th>
+                <th>Schedule</th>
+                <th>Last run</th>
+            </tr>
+            {% for robot in robots %}
+            <tr>
+                <td><a href="{{ uri_for('robot-view', mid=robot.key.id()) }}">{{ robot.name }}</a></td>
+                <td>{{ schedules[robot.schedule] }}</td>
+                <td>-</td>
+            </tr>
+            {% endfor %}
+        </table>
 
-    <table class="table">
-        <tr>
-            <th>Name</th>
-            <th>Schedule</th>
-            <th>Last run</th>
-        </tr>
-        {% for robot in robots %}
-        <tr>
-            <td><a href="{{ uri_for('robot-view', mid=robot.key.id()) }}">{{ robot.name }}</a></td>
-            <td>{{ schedules[robot.schedule] }}</td>
-            <td>-</td>
-        </tr>
-        {% endfor %}
-    </table>
+    </div><!-- col-lg-12 -->
+</div><!-- /row -->
 
 {% endblock %}

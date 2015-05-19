@@ -1,0 +1,29 @@
+<div role="tabpanel" class="tab-pane" id="crawls">
+
+    <h4>Crawls</h4>
+    {% if crawls %}
+    <table class="table table-bordered">
+        <tr>
+            <th>ID</th>
+            <th>Started</th>
+            <th>Finished</th>
+            <th>Status</th>
+            <th>Jobs</th>
+        </tr>
+        {% for crawl in crawls %}
+        <tr>
+            <td>
+                <a href="{{ uri_for('robot-view-crawl', mid=robot.key.id(), cid=crawl.key.id()) }}">{{
+                    crawl.key.id() }}</a></td>
+            <td>{{ crawl.started_at }}</td>
+            <td>{{ crawl.finished_at }}</td>
+            <td>{{ crawl.status }}</td>
+            <td>{{ crawl.num_jobs }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p><em>No crawls yet</em></p>
+    {% endif %}
+
+</div>

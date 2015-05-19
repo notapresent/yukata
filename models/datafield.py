@@ -7,14 +7,15 @@ from lxml import etree, cssselect
 
 SELECTOR_TYPES = OrderedDict([
     (u'xpath', u'XPath'),
-    # (u'css', u'CSS'),
+    (u'css', u'CSS'),
     # (u'rx', u'RegExp')
 ])
 
 
 class DataField(ndb.Model):
     selector = ndb.StringProperty()
-    selector_type = ndb.StringProperty(choices=SELECTOR_TYPES.keys())
+    selector_type = ndb.StringProperty(choices=SELECTOR_TYPES.keys(),
+                                       default=SELECTOR_TYPES.keys()[0])
     rx = ndb.StringProperty()
 
     def process(self, html):

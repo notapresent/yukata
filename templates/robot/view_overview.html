@@ -1,0 +1,33 @@
+<div role="tabpanel" class="tab-pane active" id="overview">
+    <table class="table table-bordered">
+        <tr>
+            <th>ID</th>
+            <td>{{ robot.key.id() }}</td>
+        </tr>
+        <tr>
+            <th>Schedule</th>
+            <td>{{ schedules[robot.schedule] }}</td>
+        </tr>
+        <tr>
+            <th>Requests per second</th>
+            <td>{{ robot.rps }}</td>
+        </tr>
+        <tr>
+            <th>Timeout</th>
+            <td>{{ robot.timeout }}</td>
+        </tr>
+
+        <tr>
+            <th>URL source</th>
+            <td>
+                <h4>{{ robot.urlsource.kind }}</h4>
+                {% for name, value in
+                robot.urlsource.to_dict(exclude=['kind']).iteritems() %}
+                <strong>{{ name }}</strong>: {{ value }}<br>
+                {% endfor %}
+            </td>
+        </tr>
+    </table>
+
+    <h1>TODO: datasets or results here</h1>
+</div>
